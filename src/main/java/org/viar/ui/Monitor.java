@@ -1,6 +1,7 @@
 package org.viar.ui;
 
 import java.awt.Color;
+import java.awt.Font;
 
 import javax.annotation.PostConstruct;
 import javax.swing.JFrame;
@@ -21,12 +22,13 @@ public class Monitor {
 		frame.setLayout(null);
 		
 		label = new JTextArea("no data");
-		label.setBounds(0, 0, 800, 200);
+		label.setFont(new Font(Font.DIALOG, Font.BOLD, 30));
+		label.setBounds(0, 0, 1200, 500);
 		label.setBackground(Color.WHITE);
 		label.setEditable(false);
 		
 		frame.add(label);
-		frame.setSize(810, 210);
+		frame.setSize(1200, 500);
 		frame.setResizable(false);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
