@@ -22,7 +22,8 @@ import org.viar.ui.Monitor;
 @Component
 public class CameraProcessor {
 
-	private final int numCameras = 1;
+	private final int numCameras = 3;
+	
 	private final int frameWidthHalf = 1920 / 2;  
 	private final int frameHeightHalf = 1080 / 2;  
 	private final double frameScale = frameWidthHalf;  
@@ -106,7 +107,8 @@ public class CameraProcessor {
 	private native void init(int cameraCount, boolean serialCameraSelection);
 
 	private native String[] processFrame(int cameraId);
-
+	
+	
 	// private native String calibrateFrame(int cameraId);
 
 }

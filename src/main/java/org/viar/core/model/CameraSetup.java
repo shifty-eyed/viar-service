@@ -1,7 +1,14 @@
 package org.viar.core.model;
 
+import javax.vecmath.AxisAngle4d;
+import javax.vecmath.Matrix3d;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Vector3d;
+
+import org.opencv.calib3d.Calib3d;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.viar.core.ConvertUtil;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -13,49 +20,59 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class CameraSetup {
 	
+	private static void log(String s) {
+		System.out.println(s);
+	}
+
 	private @Getter int id;
 	private @Getter Matrix4d modelView;
 	private @Getter Vector3d direction;
-	
-	public CameraSetup(int id, Vector3d position, Vector3d target, Vector3d up) {
-		direction = new Vector3d();
-		direction.sub(target, position);
-		direction.normalize();
+	private @Getter Vector3d position;
+	private @Getter Vector3d rvec;
+
+	public CameraSetup(int id, Vector3d eye, Vector3d center, Vector3d up) {
 		
-		Vector3d s = new Vector3d();
-		s.cross(direction, up);
-		s.normalize();
-		
-		Vector3d u = new Vector3d();
-		u.cross(s, direction);
-		u.normalize();
+        Vector3d forward = new Vector3d();
+        forward.sub(center, eye);
+        forward.normalize();
+        log("forward: "+forward);
 
+        Vector3d side = new Vector3d();
+        side.cross(forward, up);
+        side.normalize();
+        log("side: "+side);
 
-		double[] data = new double[16];
-		data[0] = s.x;
-		data[4] = s.y;
-		data[8] = s.z;
+        Vector3d upNew = new Vector3d();
+        upNew.cross(side, forward);
+        upNew.normalize();
+        log("upnew: "+upNew);
 
-		data[1] = u.x;
-		data[5] = u.y;
-		data[9] = u.z;
-
-		data[2] = -direction.x;
-		data[6] = -direction.y;
-		data[10] = -direction.z;
-
-		data[3] = 0.0f;
-		data[7] = 0.0f;
-		data[11] = 0.0f;
-
-		data[12] = - s.dot(position);
-		data[13] = - u.dot(position);
-		data[14] = direction.dot(position);
-		data[15] = 1.0f;
-		
-		modelView = new Matrix4d(data);
-		this.id = id;
-		
+        Matrix3d rotation = new Matrix3d();
+        //rotation.setColumn(0, side);
+        //rotation.setColumn(1, upNew);
+        //rotation.setColumn(2, forward);
+        
+        float[] m = new float[16];
+        Matrix.setLookAtM(m, 0, (float)eye.x, (float)eye.y, (float)eye.z,
+        		(float)center.x, (float)center.y, (float)center.z,
+        		(float)up.x, (float)up.y, (float)up.z);
+        rotation.setRow(0, m[0], m[4], m[8]);
+        rotation.setRow(1, m[1], m[5], m[9]);
+        rotation.setRow(2, m[2], m[6], m[10]);
+        
+        
+        direction = forward;
+        position = eye;
+        modelView = new Matrix4d(rotation, position, 1);
+        
+        AxisAngle4d aa = new AxisAngle4d();
+        aa.set(rotation);
+        log("aa: \n" + aa.toString());
+        
+        Mat rvec = new Mat(3, 1, CvType.CV_64F);
+        Calib3d.Rodrigues(ConvertUtil.matrix3dToMat(rotation), rvec);
+        log("rvec: \n" + ConvertUtil.stringOfMat(rvec));
 	}
-	
+
+
 }
