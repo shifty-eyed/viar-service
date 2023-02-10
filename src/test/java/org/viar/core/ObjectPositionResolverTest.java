@@ -2,13 +2,11 @@ package org.viar.core;
 
 import java.util.Arrays;
 
-import javax.vecmath.Matrix3d;
-import javax.vecmath.Point2d;
 import javax.vecmath.Point3d;
-import javax.vecmath.Vector3d;
 
 import org.junit.Test;
 import org.opencv.calib3d.Calib3d;
+import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfDouble;
@@ -16,7 +14,6 @@ import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.MatOfPoint3f;
 import org.opencv.core.Point;
 import org.opencv.core.Point3;
-import org.viar.core.model.CameraSetup;
 
 public class ObjectPositionResolverTest {
 	static {
@@ -24,144 +21,139 @@ public class ObjectPositionResolverTest {
 	}
 	private ObjectPositionResolver testee = new ObjectPositionResolver();
 	
-	static Mat CameraMatrix = ObjectPositionResolver.cvCameraMartix(2754.05, 2619.06, 301.999, 370.694);
-	static MatOfDouble DistCoeffs = new MatOfDouble(-0.312701, 0.8252, -0.0240964, -0.00733861, -0.923225);
+	static final double inch = 0.0254;
 	
-	static Mat CameraMatrixIdeal = ObjectPositionResolver.cvCameraMartix(1303, 1303, 960, 540);
+	static final double[][] calibrationData = {
+			//cap1
+			{-26.5,-9,27.1,    536,668,  1561,884}, //1
+			{-26.5,-20,27.1,   484,644,  1367,888}, //2
+			{-42.6,-20,27.1,   174,743,  1290,809}, //3
+			{-26.5,-9,46.87,   516,333,  1586,532}, //4
+			{-26.5,-20,46.87,  462,367,  1383,531}, //5
+			{-35.5,-20,46.87,  279,368,  1338,515}, //6
+			
+			//cap2
+			{17,-20.5,46.87,   1297,372, 1866,703}, //4
+			{17,-31.87,46.87,  1352,423, 1470,708}, //5
+			{8,-31.87,46.87,   1146,421, 1374,649}, //6
+			
+			//cap3
+			{-14.2,-47,46.87,   546,531, 876,565}, //4
+			{-14.2,-58,46.87,   448,653, 625,566}, //5
+			{-14.2-9,-58,46.87, 114,648, 653,543}, //6
+	};
+	
+	static void log(String msg) {
+		System.out.println(msg);
+	}
+	
+	static final double d45 = Math.PI/4; 
+	static final double d90 = Math.PI/2; 
+	
+	static Mat CameraMatrixWin = ObjectPositionResolver.cvCameraMartix(1698.2, 1001.74, 606.883);
+	static MatOfDouble DistCoeffsWin = new MatOfDouble(0.185377, -1.04121, 0, 0, 1.09319);
+	
+	static Mat CameraMatrixTim = ObjectPositionResolver.cvCameraMartix(1763.01, 972.898, 440.798);
+	static MatOfDouble DistCoeffsTim = new MatOfDouble(0.215209, -1.3063, 0, 0, 1.56173);
+	
+	static Mat CameraMatrixIdeal = ObjectPositionResolver.cvCameraMartix(600, 960, 540);
 	static MatOfDouble DistCoeffsIdeal = new MatOfDouble(0, 0, 0, 0, 0);
+
 	
-	/*  calibrate camera -> intrinsic
-	 *  solvePnP -> extrinsic
-	 *  
-	 *  undistortPoints 
-	 *  
-	 *   Rodrigues method to convert the rotation vector to a rotation matrix
-	 *   Rodrigues method to convert rvec and tvec to rotation matrix (model matrix)
-	 *   
-	 *   composeRT method is used to combine the intrinsic and extrinsic parameters to obtain the projection matrix.
-	 *   
-	 *   projection matrix -> Calib3d.triangulatePoints to recover 3d points
-	 */
-
-
+	MatOfPoint3f getObjectPoints(double[][] data) {
+		Point3[] result = new Point3[data.length];
+		for (int i=0; i<data.length; i++) {
+			result[i] = new Point3(data[i][0]*inch, data[i][1]*inch, data[i][2]*inch);
+		}
+		return new MatOfPoint3f(result);
+	}
+	
+	MatOfPoint2f getImagePoints(int camId, double[][] data) {
+		final int offset = 3 + camId;
+		Point[] result = new Point[data.length];
+		for (int i=0; i<data.length; i++) {
+			double x = data[i][offset + 0];
+			double y = data[i][offset + 1];
+			
+			result[i] = new Point(x, y);
+		}
+		return new MatOfPoint2f(result);
+	}
+	
 	@Test
 	public void testTriangulate() {
-		
-		//CameraSetup cam1 = new CameraSetup(0, new Vector3d(1.525,-1.2, 1.2), new Vector3d(-1.425, -1.0125, 1.075), new Vector3d(0,0,1));
-		//CameraSetup cam2 = new CameraSetup(0, new Vector3d(-0.4875, -4.05, 1.6875), new Vector3d(-0.35, -1.0375, 1.0), new Vector3d(0,0,1));//tima
-		
-		
-		System.out.println("---Cam1");
-		CameraSetup cam1 = new CameraSetup(0, new Vector3d(0, -4, 0), new Vector3d(2,-2, 0), new Vector3d(0,0,1));
-		Mat proj1 = composeProjection(cam1, CameraMatrixIdeal);
-		
-		
-		System.out.println("---Cam2");
-		CameraSetup cam2 = new CameraSetup(1, new Vector3d(4, -4, 0), new Vector3d(2,-2, 0), new Vector3d(0,0,1));
-		Mat proj2 = composeProjection(cam2, CameraMatrixIdeal);
-		
-		//Point2d point1 = new Point2d(1678, 736);
-		//Point2d point2 = new Point2d(895, 618);
-		Point2d point1 = new Point2d(0, 0);
-		Point2d point2 = new Point2d(0, 0);
-		
-		
-		Point3d v = linearTriangulation(point1, proj1, point2, proj2); 
-		
-		System.out.println(v.toString());
-		
-		
+		try {
+			
+			//Mat tvec1 = new MatOfPoint3f(new Point3(-0.030323800567347008, 0.6279016588806708, 3.0672747359890327));
+			//Mat tvec2 = new MatOfPoint3f(new Point3(0.28126003762961876, 2.04519503497205, 1.9712407528621971));
+			
+			Mat tvec1 = new MatOfPoint3f(new Point3(-0.030323800567347008, 0.6279016588806708, 1.2));
+			Mat tvec2 = new MatOfPoint3f(new Point3(0.28126003762961876, 2.04519503497205, 1.6));
+			
+			Mat proj1 = composeProjection(0, CameraMatrixWin, DistCoeffsWin);
+			Mat proj2 = composeProjection(1, CameraMatrixTim, DistCoeffsTim);
+			
+			MatOfPoint2f imagePoint1 = getImagePoints(0, calibrationData);
+			MatOfPoint2f imagePoint2 = getImagePoints(1, calibrationData);
+			
+			for (int i=0; i< imagePoint1.rows();i++) {
+				Point3d v = linearTriangulation(proj1,proj2, new Point(imagePoint1.get(i, 0)),  
+						new Point(imagePoint2.get(i, 0)));
+				log("v="+v);
+				
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
-	/*private Mat composeProjection2(Vector3d rot, Vector3d trans) {
+	private Mat composeProjection(int camId, Mat cameraMatrix, MatOfDouble distCoefficients) {
+		log("Camera#"+(camId+1));
+		MatOfPoint3f objectPoints = getObjectPoints(calibrationData);
+		MatOfPoint2f imagePoints = getImagePoints(camId, calibrationData);
 		
-		Mat rvec = new Mat(3, 1, CvType.CV_64F);
-		rvec.put(0, 0, rot.x);
-		rvec.put(1, 0, rot.y);
-		rvec.put(2, 0, rot.z);
-		Mat tvec = new Mat(3, 1, CvType.CV_64F);
-		tvec.put(0, 0, trans.x);
-		tvec.put(1, 0, trans.y);
-		tvec.put(2, 0, trans.z);
+		Mat rvec = new Mat();
+		Mat tvec = new Mat();
+		Calib3d.solvePnP(objectPoints, imagePoints, cameraMatrix, distCoefficients, rvec, tvec);
 		
-		Mat rmat = new Mat(3, 3, CvType.CV_64F);
+		log("rvec: "+ConvertUtil.stringOfMatLine(rvec));
+		log("tvec: "+ConvertUtil.stringOfMatLine(tvec));
 		
+		Mat rmat = Mat.zeros(3, 3, CvType.CV_64F);
 		Calib3d.Rodrigues(rvec, rmat);
 		
-		System.out.println("extrinsic:");
-		System.out.println(stringOfMat(extrinsic));
-		
-		return extrinsic;
-	}*/
-	
-	private Mat composeProjection(CameraSetup cam, Mat cameraMatrix) {
-		Matrix3d rot = new Matrix3d();
-		Vector3d trans = new Vector3d();
-		
-		cam.getModelView().get(rot, trans);
+		log("rmat: \n"+ConvertUtil.stringOfMat(rmat));
 		
 		Mat extrinsic = Mat.zeros(3, 4, CvType.CV_64F);
-		extrinsic.put(0, 0, rot.m00, rot.m01, rot.m02, trans.x);
-		extrinsic.put(1, 0, rot.m10, rot.m11, rot.m12, trans.y);
-		extrinsic.put(2, 0, rot.m20, rot.m21, rot.m22, trans.z);
+		Core.hconcat(Arrays.asList(rmat, tvec), extrinsic);
 		
-		//Mat projection = new Mat();
-		//Core.gemm(cameraMatrix, extrinsic, 1.0, new Mat(), 0.0, projection);
+		log("extrinsic: \n"+ConvertUtil.stringOfMat(extrinsic));
 		
-		//System.out.println("intrinsic:");
-		//System.out.println(stringOfMat(cameraMatrix));
+		Mat projection = new Mat();
+		Core.gemm(cameraMatrix, extrinsic, 1.0, new Mat(), 0.0, projection);
 		
-		System.out.println("extrinsic:");
-		System.out.println(stringOfMat(extrinsic));
+		log("projection: \n"+ConvertUtil.stringOfMat(projection));
 		
-		//System.out.println("projection:");
-		//System.out.println(stringOfMat(projection));
-		
-		return extrinsic;
+		return projection;
 	}
 	
-	
-	public void solvePnPTest() {
-		
-		//MatOfPoint3f objectPoints, MatOfPoint2f imagePoints, Mat cameraMatrix, MatOfDouble distCoeffs, Mat rvec, Mat tvec
-		
-		MatOfPoint3f objectPoints = new MatOfPoint3f(new Point3(-0.7625, 0, 0.875));
-		MatOfPoint2f imagePoints = new MatOfPoint2f(new Point(1,2));
-				
-		Mat outRotation = new Mat();
-		Mat outTranslation = new Mat();
-		
-		Calib3d.solvePnP(objectPoints, imagePoints, CameraMatrix, DistCoeffs, outRotation, outTranslation);
-
-		//System.out.println(v.toString());
-	}
-	
-	private static String stringOfMat(Mat m) {
-		StringBuilder sb = new StringBuilder();
-		for (int y=0; y<m.rows(); y++) {
-			for (int x=0; x<m.cols(); x++)
-				sb.append(Arrays.toString(m.get(y, x))).append(", ");
-			sb.append("\n");
-		}
-		return sb.toString();
-	}
-	
-	public static Point3d linearTriangulation(Point2d p1, Mat projMatrix1, Point2d p2, Mat projMatrix2) {
-		Mat points1 = new Mat(2,1,CvType.CV_32F);
-		points1.put(0, 0, p1.x);
-		points1.put(1, 0, p1.y);
-		Mat points2 = new Mat(2,1,CvType.CV_32F);
-		points2.put(0, 0, p2.x);
-		points2.put(1, 0, p2.y);
+	public static Point3d linearTriangulation(Mat projMatrix1, Mat projMatrix2, Point p1, Point p2) {
+		Mat points1 = new MatOfPoint2f(p1);
+		Mat points2 = new MatOfPoint2f(p2);
 		
 		Mat resultMat = new Mat();
-		Calib3d.triangulatePoints(projMatrix1, projMatrix1, points1, points2, resultMat);
+		Calib3d.triangulatePoints(projMatrix1, projMatrix2, points1, points2, resultMat);
 		
-		System.out.println("Resultmat:");
-		System.out.println(stringOfMat(resultMat));
+		log("Resultmat:");
+		log(ConvertUtil.stringOfMatLine(resultMat));
 		
+		double x = resultMat.get(0, 0)[0];
+		double y = resultMat.get(1, 0)[0];
+		double z = resultMat.get(2, 0)[0];
 		double w = resultMat.get(3, 0)[0];
-		return new Point3d(resultMat.get(0, 0)[0] / w, resultMat.get(1, 0)[0] / w, resultMat.get(2, 0)[0] / w);
+		
+		return new Point3d((x / w) / inch, (y / w) / inch, (z / w) / inch);
 	}
 
 }

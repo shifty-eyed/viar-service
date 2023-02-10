@@ -40,5 +40,16 @@ public class ConvertUtil {
 		}
 		return sb.toString();
 	}
+	
+	public static String stringOfMatLine(Mat m) {
+		StringBuilder sb = new StringBuilder();
+		for (int y=0; y<m.rows(); y++) {
+			for (int x=0; x<m.cols(); x++)
+				sb.append(Arrays.toString(m.get(y, x))).append(", ");
+		}
+		return sb.toString();
+	}
+	
+	
 
 }

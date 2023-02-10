@@ -26,10 +26,10 @@ public class ObjectPositionResolver {
 	private Collection<MarkerNode> nodes;
 	private Map<Integer, CameraSetup> cameras;
 	
-	public static Mat cvCameraMartix(double fx, double fy, double cx, double cy) {
+	public static Mat cvCameraMartix(double f, double cx, double cy) {
 		Mat result = Mat.zeros(3, 3, CvType.CV_64F);
-		result.put(0, 0, fx);
-		result.put(1, 1, fy);
+		result.put(0, 0, f);
+		result.put(1, 1, f);
 		result.put(0, 2, cx);
 		result.put(1, 2, cy);
 		result.put(2, 2, 1);

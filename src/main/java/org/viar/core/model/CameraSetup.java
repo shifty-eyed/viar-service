@@ -28,9 +28,44 @@ public class CameraSetup {
 	private @Getter Matrix4d modelView;
 	private @Getter Vector3d direction;
 	private @Getter Vector3d position;
-	private @Getter Vector3d rvec;
+	private @Getter Mat rvec;
 
+	public CameraSetup(int id) {
+		this.id = id;
+	}
+	
 	public CameraSetup(int id, Vector3d eye, Vector3d center, Vector3d up) {
+		this.id = id;
+		initLookAt(eye, center, up);
+	}
+	
+	public void init(Vector3d eye, AxisAngle4d axisAngle) {
+		position = eye;
+        rvec = new Mat(3, 1, CvType.CV_64F);
+        Matrix3d rotation = new Matrix3d();
+        Calib3d.Rodrigues(ConvertUtil.matrix3dToMat(rotation), rvec);
+	}
+	
+	public void initLookAt(Vector3d eye, Vector3d center, Vector3d up) {
+        Matrix3d rotation = new Matrix3d();
+        
+        float[] m = new float[16];
+        Matrix.setLookAtM(m, 0, (float)eye.x, (float)eye.y, (float)eye.z,
+        		(float)center.x, (float)center.y, (float)center.z,
+        		(float)up.x, (float)up.y, (float)up.z);
+        rotation.setRow(0, m[0], m[4], m[8]);
+        rotation.setRow(1, m[1], m[5], m[9]);
+        rotation.setRow(2, m[2], m[6], m[10]);
+        
+        position = eye;
+        modelView = new Matrix4d(rotation, position, 1);
+        
+        rvec = new Mat(3, 1, CvType.CV_64F);
+        Calib3d.Rodrigues(ConvertUtil.matrix3dToMat(rotation), rvec);
+        log("rvec: \n" + ConvertUtil.stringOfMat(rvec));
+	}
+	
+	public void initLookAtVecMath(Vector3d eye, Vector3d center, Vector3d up) {
 		
         Vector3d forward = new Vector3d();
         forward.sub(center, eye);
@@ -48,31 +83,19 @@ public class CameraSetup {
         log("upnew: "+upNew);
 
         Matrix3d rotation = new Matrix3d();
-        //rotation.setColumn(0, side);
-        //rotation.setColumn(1, upNew);
-        //rotation.setColumn(2, forward);
-        
-        float[] m = new float[16];
-        Matrix.setLookAtM(m, 0, (float)eye.x, (float)eye.y, (float)eye.z,
-        		(float)center.x, (float)center.y, (float)center.z,
-        		(float)up.x, (float)up.y, (float)up.z);
-        rotation.setRow(0, m[0], m[4], m[8]);
-        rotation.setRow(1, m[1], m[5], m[9]);
-        rotation.setRow(2, m[2], m[6], m[10]);
-        
+        rotation.setColumn(0, side);
+        rotation.setColumn(1, upNew);
+        rotation.setColumn(2, forward);
         
         direction = forward;
         position = eye;
         modelView = new Matrix4d(rotation, position, 1);
         
-        AxisAngle4d aa = new AxisAngle4d();
-        aa.set(rotation);
-        log("aa: \n" + aa.toString());
-        
-        Mat rvec = new Mat(3, 1, CvType.CV_64F);
+        rvec = new Mat(3, 1, CvType.CV_64F);
         Calib3d.Rodrigues(ConvertUtil.matrix3dToMat(rotation), rvec);
         log("rvec: \n" + ConvertUtil.stringOfMat(rvec));
 	}
+
 
 
 }
