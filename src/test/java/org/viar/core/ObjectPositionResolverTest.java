@@ -14,6 +14,7 @@ import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.MatOfPoint3f;
 import org.opencv.core.Point;
 import org.opencv.core.Point3;
+import org.viar.core.model.CameraSetup;
 
 public class ObjectPositionResolverTest {
 	static {
@@ -46,19 +47,12 @@ public class ObjectPositionResolverTest {
 	static void log(String msg) {
 		System.out.println(msg);
 	}
-	
-	static final double d45 = Math.PI/4; 
-	static final double d90 = Math.PI/2; 
-	
-	static Mat CameraMatrixWin = ObjectPositionResolver.cvCameraMartix(1698.2, 1001.74, 606.883);
+
+	static Mat CameraMatrixWin = CameraSetup.cvCameraMartix(1698.2, 1001.74, 606.883);
 	static MatOfDouble DistCoeffsWin = new MatOfDouble(0.185377, -1.04121, 0, 0, 1.09319);
 	
-	static Mat CameraMatrixTim = ObjectPositionResolver.cvCameraMartix(1763.01, 972.898, 440.798);
+	static Mat CameraMatrixTim = CameraSetup.cvCameraMartix(1763.01, 972.898, 440.798);
 	static MatOfDouble DistCoeffsTim = new MatOfDouble(0.215209, -1.3063, 0, 0, 1.56173);
-	
-	static Mat CameraMatrixIdeal = ObjectPositionResolver.cvCameraMartix(600, 960, 540);
-	static MatOfDouble DistCoeffsIdeal = new MatOfDouble(0, 0, 0, 0, 0);
-
 	
 	MatOfPoint3f getObjectPoints(double[][] data) {
 		Point3[] result = new Point3[data.length];
@@ -74,7 +68,6 @@ public class ObjectPositionResolverTest {
 		for (int i=0; i<data.length; i++) {
 			double x = data[i][offset + 0];
 			double y = data[i][offset + 1];
-			
 			result[i] = new Point(x, y);
 		}
 		return new MatOfPoint2f(result);
@@ -83,12 +76,6 @@ public class ObjectPositionResolverTest {
 	@Test
 	public void testTriangulate() {
 		try {
-			
-			//Mat tvec1 = new MatOfPoint3f(new Point3(-0.030323800567347008, 0.6279016588806708, 3.0672747359890327));
-			//Mat tvec2 = new MatOfPoint3f(new Point3(0.28126003762961876, 2.04519503497205, 1.9712407528621971));
-			
-			Mat tvec1 = new MatOfPoint3f(new Point3(-0.030323800567347008, 0.6279016588806708, 1.2));
-			Mat tvec2 = new MatOfPoint3f(new Point3(0.28126003762961876, 2.04519503497205, 1.6));
 			
 			Mat proj1 = composeProjection(0, CameraMatrixWin, DistCoeffsWin);
 			Mat proj2 = composeProjection(1, CameraMatrixTim, DistCoeffsTim);

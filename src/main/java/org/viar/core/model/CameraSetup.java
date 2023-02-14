@@ -1,13 +1,18 @@
 package org.viar.core.model;
 
-import javax.vecmath.AxisAngle4d;
+import java.util.Arrays;
+
 import javax.vecmath.Matrix3d;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Vector3d;
 
 import org.opencv.calib3d.Calib3d;
+import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfDouble;
+import org.opencv.core.MatOfPoint2f;
+import org.opencv.core.Point;
 import org.viar.core.ConvertUtil;
 
 import lombok.AllArgsConstructor;
@@ -15,10 +20,38 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
-@AllArgsConstructor
 @ToString
 @EqualsAndHashCode
 public class CameraSetup {
+
+	@AllArgsConstructor
+	public class Intrinsic {
+		private @Getter Mat cameraMatrix;
+		private @Getter MatOfDouble distCoefficients;
+		
+		public Point normalizePoint(double x, double y) {
+			MatOfPoint2f result = new MatOfPoint2f();
+			Calib3d.undistortPoints(new MatOfPoint2f(new Point(x,y)), result, cameraMatrix, distCoefficients);
+			return result.toArray()[0];
+		}
+	}
+	
+	public class Extrinsic {
+		public Extrinsic(Mat rvec, MatOfDouble tvec) {
+			this.rvec = rvec;
+			this.tvec = tvec;
+			rotationMatrix = Mat.zeros(3, 3, CvType.CV_64F);
+			Calib3d.Rodrigues(rvec, rotationMatrix);
+			
+			extrinsicMatrix = Mat.zeros(3, 4, CvType.CV_64F);
+			Core.hconcat(Arrays.asList(rotationMatrix, tvec), extrinsicMatrix);
+		}
+		private @Getter Mat rvec;
+		private @Getter MatOfDouble tvec;
+		private @Getter Mat rotationMatrix;
+		private @Getter Mat extrinsicMatrix;
+		
+	}
 	
 	private static void log(String s) {
 		System.out.println(s);
@@ -28,23 +61,21 @@ public class CameraSetup {
 	private @Getter Matrix4d modelView;
 	private @Getter Vector3d direction;
 	private @Getter Vector3d position;
-	private @Getter Mat rvec;
-
-	public CameraSetup(int id) {
-		this.id = id;
-	}
+	private @Getter Intrinsic intrinsic;
+	private @Getter Extrinsic extrinsic;
+	private @Getter Mat projectionMatrix;
 	
-	public CameraSetup(int id, Vector3d eye, Vector3d center, Vector3d up) {
+	public CameraSetup(int id, Vector3d eye, Vector3d center, Vector3d up, Mat cameraMatrix, MatOfDouble distCoefficients, MatOfDouble rvec, MatOfDouble tvec) {
 		this.id = id;
 		initLookAt(eye, center, up);
+		intrinsic = new Intrinsic(cameraMatrix, distCoefficients);
+		extrinsic = new Extrinsic(rvec, tvec);
+		
+		projectionMatrix = new Mat();
+		Core.gemm(cameraMatrix, extrinsic.getExtrinsicMatrix(), 1.0, new Mat(), 0.0, projectionMatrix);
+		log("projection #"+id+"\n"+ConvertUtil.stringOfMat(projectionMatrix));
 	}
 	
-	public void init(Vector3d eye, AxisAngle4d axisAngle) {
-		position = eye;
-        rvec = new Mat(3, 1, CvType.CV_64F);
-        Matrix3d rotation = new Matrix3d();
-        Calib3d.Rodrigues(ConvertUtil.matrix3dToMat(rotation), rvec);
-	}
 	
 	public void initLookAt(Vector3d eye, Vector3d center, Vector3d up) {
         Matrix3d rotation = new Matrix3d();
@@ -59,10 +90,6 @@ public class CameraSetup {
         
         position = eye;
         modelView = new Matrix4d(rotation, position, 1);
-        
-        rvec = new Mat(3, 1, CvType.CV_64F);
-        Calib3d.Rodrigues(ConvertUtil.matrix3dToMat(rotation), rvec);
-        log("rvec: \n" + ConvertUtil.stringOfMat(rvec));
 	}
 	
 	public void initLookAtVecMath(Vector3d eye, Vector3d center, Vector3d up) {
@@ -90,10 +117,16 @@ public class CameraSetup {
         direction = forward;
         position = eye;
         modelView = new Matrix4d(rotation, position, 1);
-        
-        rvec = new Mat(3, 1, CvType.CV_64F);
-        Calib3d.Rodrigues(ConvertUtil.matrix3dToMat(rotation), rvec);
-        log("rvec: \n" + ConvertUtil.stringOfMat(rvec));
+	}
+	
+	public static Mat cvCameraMartix(double f, double cx, double cy) {
+		Mat result = Mat.zeros(3, 3, CvType.CV_64F);
+		result.put(0, 0, f);
+		result.put(1, 1, f);
+		result.put(0, 2, cx);
+		result.put(1, 2, cy);
+		result.put(2, 2, 1);
+		return result;
 	}
 
 

@@ -8,7 +8,7 @@ import org.opencv.core.Mat;
 import org.opencv.core.MatOfDouble;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.videoio.VideoCapture;
-import org.viar.core.ObjectPositionResolver;
+import org.viar.core.model.CameraSetup;
 
 public class SaveSnapshotAllCameras {
 	
@@ -18,7 +18,7 @@ public class SaveSnapshotAllCameras {
 	public static void main(String[] args) throws Exception {
 		nu.pattern.OpenCV.loadShared();
 		
-		Mat CameraMatrixWin = ObjectPositionResolver.cvCameraMartix(1698.2, 1001.74, 606.883);
+		Mat CameraMatrixWin = CameraSetup.cvCameraMartix(1698.2, 1001.74, 606.883);
 		MatOfDouble DistCoeffsWin = new MatOfDouble(0.185377, -1.04121, 0, 0, 1.09319);
 
 		

@@ -2,6 +2,7 @@ package org.viar.core;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -10,19 +11,19 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
-import javax.vecmath.Point2d;
 
+import org.opencv.core.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.viar.core.model.MarkerRawPosition;
 import org.viar.ui.Monitor;
 
 @Component
 public class CameraProcessor {
 
-	private final int numCameras = 3;
+	private final int numCameras = 2;
 	
 	private final int frameWidthHalf = 1920 / 2;  
 	private final int frameHeightHalf = 1080 / 2;  
@@ -30,6 +31,9 @@ public class CameraProcessor {
 	
 	@Autowired
 	private Monitor monitor;
+	
+	@Autowired
+	private ObjectPositionResolver objectPositionResolver;
 
 	private ExecutorService pool;
 	private ExecutorService mainLoopRunner;
@@ -45,7 +49,7 @@ public class CameraProcessor {
 	private Runnable mainLoop = new Runnable() {
 		@Override
 		public void run() {
-			Map<Integer, Map<Integer, Point2d>> data = Collections.emptyMap();
+			Map<Integer, Collection<MarkerRawPosition>> data = Collections.emptyMap();
 			for (;;) {
 				long time = System.currentTimeMillis();
 				try {
@@ -56,35 +60,31 @@ public class CameraProcessor {
 				time = System.currentTimeMillis() - time;
 
 				if (data != null) {
-					StringBuilder sb = new StringBuilder();
-					for (Map.Entry<Integer, Map<Integer, Point2d>> e : data.entrySet()) {
+					/*StringBuilder sb = new StringBuilder();
+					for (Map.Entry<Integer, Collection<MarkerRawPosition>> e : data.entrySet()) {
 						sb.append("cam-").append(e.getKey()).append("\n")
-								.append(e.getValue().entrySet().stream().map(
-										(p) -> String.format("%d: (%.3f,%.3f)", p.getKey(), p.getValue().x, p.getValue().y)
+								.append(e.getValue().stream().map(
+										(p) -> String.format("%d: (%.3f,%.3f)", p.getMarkerId(), p.getPosition().x, p.getPosition().y)
 								).collect(Collectors.joining(" "))).append("\n\n");
 					}
-					monitor.onChange(sb.toString(), time);
+					monitor.onChange(sb.toString(), time);*/
+					monitor.onChange(objectPositionResolver.resolve(data).toString(), time);
 				}
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-				}
+				Thread.yield();
 			}
 
 		}
 	};
 
-	private Map<Integer, Point2d> parseAndConvert(String[] data) {
+	private Collection<MarkerRawPosition> parseAndConvert(String[] data) {
 		return Arrays.stream(data).map((line) -> {
 			return Arrays.stream(line.split(" ")).map(Integer::parseInt).toArray(Integer[]::new);
-		}).collect(Collectors.toMap((parts) -> parts[0], (parts) -> {
-			double x = (parts[1] - frameWidthHalf) / frameScale;
-			double y = (parts[2] - frameHeightHalf) / frameScale;
-			return new Point2d(x, y);
-		}));
+		}).map((parts) -> {
+			return new MarkerRawPosition(parts[0], new Point(parts[1], parts[2]));
+		}).toList();
 	}
 
-	public Map<Integer, Map<Integer, Point2d>> processFrames() throws InterruptedException, ExecutionException {
+	public Map<Integer, Collection<MarkerRawPosition>> processFrames() throws InterruptedException, ExecutionException {
 
 		List<Future<String[]>> tasks = new ArrayList<>(numCameras);
 		for (int i = 0; i < numCameras; i++) {
@@ -94,7 +94,7 @@ public class CameraProcessor {
 			}));
 		}
 
-		Map<Integer, Map<Integer, Point2d>> result = new LinkedHashMap<>(numCameras);
+		Map<Integer, Collection<MarkerRawPosition>> result = new LinkedHashMap<>(numCameras);
 		for (int i = 0; i < numCameras; i++) {
 			String[] data = tasks.get(i).get();
 			if (data != null && data.length > 0) {
@@ -108,7 +108,4 @@ public class CameraProcessor {
 
 	private native String[] processFrame(int cameraId);
 	
-	
-	// private native String calibrateFrame(int cameraId);
-
 }
