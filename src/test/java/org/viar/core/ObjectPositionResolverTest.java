@@ -63,7 +63,7 @@ public class ObjectPositionResolverTest {
 	}
 	
 	MatOfPoint2f getImagePoints(int camId, double[][] data) {
-		final int offset = 3 + camId;
+		final int offset = 3 + camId*2;
 		Point[] result = new Point[data.length];
 		for (int i=0; i<data.length; i++) {
 			double x = data[i][offset + 0];
@@ -83,7 +83,7 @@ public class ObjectPositionResolverTest {
 			MatOfPoint2f imagePoint1 = getImagePoints(0, calibrationData);
 			MatOfPoint2f imagePoint2 = getImagePoints(1, calibrationData);
 			
-			for (int i=0; i< imagePoint1.rows();i++) {
+			for (int i=4; i< 5;i++) {
 				Point3d v = linearTriangulation(proj1,proj2, new Point(imagePoint1.get(i, 0)),  
 						new Point(imagePoint2.get(i, 0)));
 				log("v="+v);
@@ -126,11 +126,21 @@ public class ObjectPositionResolverTest {
 	}
 	
 	public static Point3d linearTriangulation(Mat projMatrix1, Mat projMatrix2, Point p1, Point p2) {
-		Mat points1 = new MatOfPoint2f(p1);
-		Mat points2 = new MatOfPoint2f(p2);
+		Mat imagePoint1 = new MatOfPoint2f(p1);
+		Mat imagePoint2 = new MatOfPoint2f(p2);
 		
 		Mat resultMat = new Mat();
-		Calib3d.triangulatePoints(projMatrix1, projMatrix2, points1, points2, resultMat);
+		Calib3d.triangulatePoints(projMatrix1, projMatrix2, imagePoint1, imagePoint2, resultMat);
+
+		log("projMatrix1:");
+		log(ConvertUtil.stringOfMat(projMatrix1));
+		log("projMatrix2:");
+		log(ConvertUtil.stringOfMat(projMatrix2));
+		log("imagePoint1:");
+		log(ConvertUtil.stringOfMatLine(imagePoint1));
+		log("imagePoint2:");
+		log(ConvertUtil.stringOfMatLine(imagePoint2));
+
 		
 		log("Resultmat:");
 		log(ConvertUtil.stringOfMatLine(resultMat));

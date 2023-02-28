@@ -11,6 +11,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -53,22 +54,26 @@ public class CameraProcessor {
 			for (;;) {
 				long time = System.currentTimeMillis();
 				try {
+					//data = processFramesMock();
 					data = processFrames();
+					/*if (data.size() == 2) {
+						System.out.println(data);
+					}*/
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 				time = System.currentTimeMillis() - time;
 
 				if (data != null) {
-					/*StringBuilder sb = new StringBuilder();
+					StringBuilder sb = new StringBuilder();
 					for (Map.Entry<Integer, Collection<MarkerRawPosition>> e : data.entrySet()) {
 						sb.append("cam-").append(e.getKey()).append("\n")
 								.append(e.getValue().stream().map(
 										(p) -> String.format("%d: (%.3f,%.3f)", p.getMarkerId(), p.getPosition().x, p.getPosition().y)
 								).collect(Collectors.joining(" "))).append("\n\n");
 					}
-					monitor.onChange(sb.toString(), time);*/
-					monitor.onChange(objectPositionResolver.resolve(data).toString(), time);
+					sb.append("\n").append(objectPositionResolver.resolve(data).toString());
+					monitor.onChange(sb.toString(), time);
 				}
 				Thread.yield();
 			}
@@ -101,6 +106,15 @@ public class CameraProcessor {
 				result.put(i, parseAndConvert(data));
 			}
 		}
+		return result;
+	}
+	
+	public Map<Integer, Collection<MarkerRawPosition>> processFramesMock() throws InterruptedException, ExecutionException {
+		
+		
+		Map<Integer, Collection<MarkerRawPosition>> result = new LinkedHashMap<>(numCameras);
+		result.put(0, parseAndConvert(new String[]{"0 462 367"}));
+		result.put(1, parseAndConvert(new String[]{"0 1383 531"}));
 		return result;
 	}
 

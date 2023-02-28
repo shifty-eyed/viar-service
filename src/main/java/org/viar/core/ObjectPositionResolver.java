@@ -38,8 +38,8 @@ public class ObjectPositionResolver {
 	@PostConstruct
 	private void init() {
 		MarkerNode n = new MarkerNode(0);
-		n.put(0, new Vector3d(0,0,0));
-		n.put(1, new Vector3d(0,0,0));
+		for (int i=0; i<10; i++)
+			n.put(i, new Vector3d(0,0,0));
 		nodes = Arrays.asList(n);
 		cameras = new HashMap<>(2);
 		cameras.put(0, new CameraSetup(0, new Vector3d(1.5,-1.1,1.5), new Vector3d(0,-1.1,1.5), new Vector3d(0,0,1), 
@@ -47,7 +47,7 @@ public class ObjectPositionResolver {
 				new MatOfDouble(1.931, 0.0205, -0.01434), new MatOfDouble(-0.03032, 0.6279016, 3.0672747)));
 		cameras.put(1, new CameraSetup(1, new Vector3d(0,-2.5,1.5), new Vector3d(0,0,1.5), new Vector3d(0,0,1), 
 				CameraMatrixTim, DistCoeffsTim,
-				new MatOfDouble(1.388, 3.63563, -2.06876), new MatOfDouble(0.28126, 2.045195, 1.97124075)));
+				new MatOfDouble(1.3005590524914123, 1.1859894659, -1.100206455382724), new MatOfDouble(1.109858441, 1.34952034, 1.83912425)));
 		
 	}
 	
@@ -74,6 +74,7 @@ public class ObjectPositionResolver {
 					List<CameraSpaceMarkerPosition> entries = result.get(node);
 					if (entries == null) {
 						entries = new ArrayList<>();
+						result.put(node, entries);
 					}
 					entries.add(new CameraSpaceMarkerPosition(cameras.get(cameraId), markerRawPosition.getMarkerId(), markerRawPosition.getPosition()));
 				}
@@ -85,9 +86,10 @@ public class ObjectPositionResolver {
 	}
 	
 	private Point3d resolveNodePosition(MarkerNode node, List<CameraSpaceMarkerPosition> registerList) {
-		assert(registerList.size() >=2);
-		
 		CameraSpaceMarkerPosition[] bestCandidates = findBestCandidates(registerList);
+		if (bestCandidates == null) {
+			return new Point3d();
+		}
 		Mat projMatrix1 = bestCandidates[0].getCamera().getProjectionMatrix();
 		Mat projMatrix2 = bestCandidates[1].getCamera().getProjectionMatrix();
 		
@@ -96,6 +98,15 @@ public class ObjectPositionResolver {
 		
 		Mat resultMat = new Mat();
 		Calib3d.triangulatePoints(projMatrix1, projMatrix2, imagePoint1, imagePoint2, resultMat);
+		
+		/*log("projMatrix1:");
+		log(ConvertUtil.stringOfMat(projMatrix1));
+		log("projMatrix2:");
+		log(ConvertUtil.stringOfMat(projMatrix2));
+		log("imagePoint1:");
+		log(ConvertUtil.stringOfMatLine(imagePoint1));
+		log("imagePoint2:");
+		log(ConvertUtil.stringOfMatLine(imagePoint2));*/
 		
 		double x = resultMat.get(0, 0)[0];
 		double y = resultMat.get(1, 0)[0];
@@ -108,9 +119,14 @@ public class ObjectPositionResolver {
 		
 	}
 	
+	static void log(String msg) {
+		System.out.println(msg);
+	}
+	
 	private CameraSpaceMarkerPosition[] findBestCandidates(List<CameraSpaceMarkerPosition> registerList) {
 		double bestDot = 1.0;
 		CameraSpaceMarkerPosition[] bestCandidates = new CameraSpaceMarkerPosition[2];
+		boolean found = false;
 		
 		for (CameraSpaceMarkerPosition c1 : registerList) {
 			for (CameraSpaceMarkerPosition c2 : registerList) {
@@ -122,10 +138,11 @@ public class ObjectPositionResolver {
 					bestDot = dot;
 					bestCandidates[0] = c1;
 					bestCandidates[1] = c2;
+					found = true;
 				}
 			}
 		}
-		return bestCandidates;
+		return found ? bestCandidates : null;
 	}
 	
 	public Map<MarkerNode, Point3d> resolve(Map<Integer, Collection<MarkerRawPosition>> rawData) {

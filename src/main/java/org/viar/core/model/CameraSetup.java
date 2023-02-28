@@ -88,6 +88,10 @@ public class CameraSetup {
         rotation.setRow(1, m[1], m[5], m[9]);
         rotation.setRow(2, m[2], m[6], m[10]);
         
+        direction = new Vector3d();
+        direction.sub(center, eye);
+        direction.normalize();
+        
         position = eye;
         modelView = new Matrix4d(rotation, position, 1);
 	}
