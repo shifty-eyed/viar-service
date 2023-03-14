@@ -1,0 +1,11 @@
+
+milestone1 - track one node and pass to unreal realtime
+1. install 4 cameras - done
+2. calibrate intrinsic each cam using new board 
+3. calibrate extrinsic each of them (or all together)
+4. make sure stereo pair selection works
+5. print bigger aruco
+
+
+Secchi disk detection, use cv.canny corner detector
+https://stackoverflow.com/questions/55483634/how-to-detect-only-corners-that-has-four-quadrants

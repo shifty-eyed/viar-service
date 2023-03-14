@@ -57,7 +57,8 @@ public class CameraSetup {
 		System.out.println(s);
 	}
 
-	private @Getter int id;
+	private @Getter String id;
+	private @Getter int deviceNumber;
 	private @Getter Matrix4d modelView;
 	private @Getter Vector3d direction;
 	private @Getter Vector3d position;
@@ -65,8 +66,9 @@ public class CameraSetup {
 	private @Getter Extrinsic extrinsic;
 	private @Getter Mat projectionMatrix;
 	
-	public CameraSetup(int id, Vector3d eye, Vector3d center, Vector3d up, Mat cameraMatrix, MatOfDouble distCoefficients, MatOfDouble rvec, MatOfDouble tvec) {
+	public CameraSetup(String id, int deviceNumber, Vector3d eye, Vector3d center, Vector3d up, Mat cameraMatrix, MatOfDouble distCoefficients, MatOfDouble rvec, MatOfDouble tvec) {
 		this.id = id;
+		this.deviceNumber = deviceNumber;
 		initLookAt(eye, center, up);
 		intrinsic = new Intrinsic(cameraMatrix, distCoefficients);
 		extrinsic = new Extrinsic(rvec, tvec);

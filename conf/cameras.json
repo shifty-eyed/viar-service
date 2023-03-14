@@ -1,0 +1,43 @@
+{
+	"1": {
+		deviceNumber: 1,
+		distCoefficients: [0.217026, -1.12806, 0, 0, 1.2493],
+		projection: [1650.38, 1024.09, 578.052],
+		eye: [0,0,0],
+		center: [0,0,0],
+		up: [0,0,0],
+		rvec: [0, 0, 0],
+		tvec: [0, 0, 0]	
+	},
+	"2": {
+		deviceNumber: 0,
+		distCoefficients: [0.183429, -1.0959, 0, 0, 1.1509],
+		projection: [1643.46, 960, 462],
+		eye: [0,0,0],
+		center: [0,0,0],
+		up: [0,0,0],
+		rvec: [0, 0, 0],
+		tvec: [0, 0, 0]	
+	},
+	"3": {
+		deviceNumber: 2,
+		distCoefficients: [0.119306, -0.739508, 0, 0, 0.663889],
+		projection: [1606.46, 991.257, 636.807],
+		eye: [0,0,0],
+		center: [0,0,0],
+		up: [0,0,0],
+		rvec: [0, 0, 0],
+		tvec: [0, 0, 0]	
+	},
+	"4": {
+		deviceNumber: 3,
+		distCoefficients: [0.194526, -1.0812, 0, 0, 1.10893],
+		projection: [1644.85, 962.397, 527.998],
+		eye: [0,0,0],
+		center: [0,0,0],
+		up: [0,0,0],
+		rvec: [0, 0, 0],
+		tvec: [0, 0, 0]	
+	}
+}
+

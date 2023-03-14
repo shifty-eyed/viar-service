@@ -16,7 +16,7 @@ import lombok.ToString;
 public class MarkerNode extends HashMap<Integer, Vector3d> {
 	private static final long serialVersionUID = 1L;
 	
-	private @Getter int id;
+	private @Getter String id;
 	
 	public Set<Integer> getMarkerIds() {
 		return keySet();

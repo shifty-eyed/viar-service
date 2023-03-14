@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,13 +19,14 @@ import javax.annotation.PostConstruct;
 import org.opencv.core.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.viar.core.model.CameraSetup;
 import org.viar.core.model.MarkerRawPosition;
 import org.viar.ui.Monitor;
 
 @Component
 public class CameraProcessor {
 
-	private final int numCameras = 2;
+	private final int numCameras = 4;
 	
 	private final int frameWidthHalf = 1920 / 2;  
 	private final int frameHeightHalf = 1080 / 2;  
@@ -35,22 +37,29 @@ public class CameraProcessor {
 	
 	@Autowired
 	private ObjectPositionResolver objectPositionResolver;
+	
+	@Autowired
+	private Map<String, CameraSetup> camerasConfig;
 
 	private ExecutorService pool;
 	private ExecutorService mainLoopRunner;
+	private Map<Integer, String> deviceNumberToCameraName = new HashMap<>();
 
 	@PostConstruct
 	private void init() {
+		camerasConfig.values().forEach(setup -> deviceNumberToCameraName.put(setup.getDeviceNumber(), setup.getId()));
 		mainLoopRunner = Executors.newSingleThreadExecutor();
 		pool = Executors.newFixedThreadPool(numCameras);
 		init(numCameras, true);
 		mainLoopRunner.execute(mainLoop);
+		
+		
 	}
 
 	private Runnable mainLoop = new Runnable() {
 		@Override
 		public void run() {
-			Map<Integer, Collection<MarkerRawPosition>> data = Collections.emptyMap();
+			Map<String, Collection<MarkerRawPosition>> data = Collections.emptyMap();
 			for (;;) {
 				long time = System.currentTimeMillis();
 				try {
@@ -66,13 +75,13 @@ public class CameraProcessor {
 
 				if (data != null) {
 					StringBuilder sb = new StringBuilder();
-					for (Map.Entry<Integer, Collection<MarkerRawPosition>> e : data.entrySet()) {
+					for (Map.Entry<String, Collection<MarkerRawPosition>> e : data.entrySet()) {
 						sb.append("cam-").append(e.getKey()).append("\n")
 								.append(e.getValue().stream().map(
 										(p) -> String.format("%d: (%.3f,%.3f)", p.getMarkerId(), p.getPosition().x, p.getPosition().y)
 								).collect(Collectors.joining(" "))).append("\n\n");
 					}
-					sb.append("\n").append(objectPositionResolver.resolve(data).toString());
+					//sb.append("\n").append(objectPositionResolver.resolve(data).toString());
 					monitor.onChange(sb.toString(), time);
 				}
 				Thread.yield();
@@ -89,7 +98,7 @@ public class CameraProcessor {
 		}).toList();
 	}
 
-	public Map<Integer, Collection<MarkerRawPosition>> processFrames() throws InterruptedException, ExecutionException {
+	public Map<String, Collection<MarkerRawPosition>> processFrames() throws InterruptedException, ExecutionException {
 
 		List<Future<String[]>> tasks = new ArrayList<>(numCameras);
 		for (int i = 0; i < numCameras; i++) {
@@ -99,11 +108,11 @@ public class CameraProcessor {
 			}));
 		}
 
-		Map<Integer, Collection<MarkerRawPosition>> result = new LinkedHashMap<>(numCameras);
+		Map<String, Collection<MarkerRawPosition>> result = new LinkedHashMap<>(numCameras);
 		for (int i = 0; i < numCameras; i++) {
 			String[] data = tasks.get(i).get();
 			if (data != null && data.length > 0) {
-				result.put(i, parseAndConvert(data));
+				result.put(deviceNumberToCameraName.get(i), parseAndConvert(data));
 			}
 		}
 		return result;
