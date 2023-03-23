@@ -12,7 +12,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -26,7 +25,7 @@ import org.viar.ui.Monitor;
 @Component
 public class CameraProcessor {
 
-	private final int numCameras = 4;
+	private final int numCameras = 1;
 	
 	private final int frameWidthHalf = 1920 / 2;  
 	private final int frameHeightHalf = 1080 / 2;  
@@ -74,15 +73,8 @@ public class CameraProcessor {
 				time = System.currentTimeMillis() - time;
 
 				if (data != null) {
-					StringBuilder sb = new StringBuilder();
-					for (Map.Entry<String, Collection<MarkerRawPosition>> e : data.entrySet()) {
-						sb.append("cam-").append(e.getKey()).append("\n")
-								.append(e.getValue().stream().map(
-										(p) -> String.format("%d: (%.3f,%.3f)", p.getMarkerId(), p.getPosition().x, p.getPosition().y)
-								).collect(Collectors.joining(" "))).append("\n\n");
-					}
 					//sb.append("\n").append(objectPositionResolver.resolve(data).toString());
-					monitor.onChange(sb.toString(), time);
+					monitor.onChange(data, time);
 				}
 				Thread.yield();
 			}
