@@ -25,7 +25,7 @@ import lombok.ToString;
 public class CameraSetup {
 
 	@AllArgsConstructor
-	public class Intrinsic {
+	public static class Intrinsic {
 		private @Getter Mat cameraMatrix;
 		private @Getter MatOfDouble distCoefficients;
 		
@@ -36,7 +36,7 @@ public class CameraSetup {
 		}
 	}
 	
-	public class Extrinsic {
+	public static class Extrinsic {
 		public Extrinsic(Mat rvec, MatOfDouble tvec) {
 			this.rvec = rvec;
 			this.tvec = tvec;

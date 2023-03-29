@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -15,11 +16,19 @@ import javax.annotation.PostConstruct;
 import javax.vecmath.Point3d;
 
 import org.apache.commons.io.IOUtils;
+import org.opencv.calib3d.Calib3d;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfDouble;
+import org.opencv.core.MatOfPoint2f;
+import org.opencv.core.MatOfPoint3f;
+import org.opencv.core.Point;
+import org.opencv.core.Point3;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.viar.calibration.model.CalibrationData;
 import org.viar.calibration.model.CalibrationSample;
 import org.viar.calibration.model.CameraSamplesSet;
+import org.viar.core.model.CameraSetup;
 import org.viar.core.model.MarkerRawPosition;
 
 import com.google.gson.Gson;
@@ -31,11 +40,15 @@ public class CalibrationDataCollector {
 	private Gson gson;
 
 	private static final String workingDir = "d:/ws/calib/";
+	private static final double inch = 0.0254;
 	
 	private Map<String, Set<CalibrationSample>> data;
 
 	@Autowired
 	private WorldCoordinatesPresets coordProvider;
+	
+	@Autowired
+	private Map<String, CameraSetup> camerasConfig;
 
 	@PostConstruct
 	private void init() {
@@ -75,12 +88,46 @@ public class CalibrationDataCollector {
 
 	}
 	
-	public void load(String filename) {
+	public CalibrationData load(String filename) {
 		try (Reader in = new InputStreamReader(new FileInputStream(workingDir + filename))) {
-			CalibrationData d = gson.fromJson(in, CalibrationData.class);
+			return gson.fromJson(in, CalibrationData.class);
 		} catch (Exception e) {
 			e.printStackTrace();
+			throw new RuntimeException(e);
+		} 
+	}
+	
+	private void solveExtrinsic(Mat cameraMatrix, MatOfDouble distCoefficients, List<CalibrationSample> samples,
+			Mat outRvec, Mat outTvec) {
+		Point3[] objectPointsData = new Point3[samples.size()];
+		Point[] imagePointsData = new Point[samples.size()];
+		
+		final double unit = inch;
+		int i = 0;
+		
+		for (CalibrationSample sample : samples) {
+			objectPointsData[i] = new Point3(sample.getX() * unit, sample.getY() * unit, sample.getZ() * unit);
+			imagePointsData[i++] = new Point(sample.getU(), sample.getV());
 		}
+		
+		MatOfPoint3f objectPoints = new MatOfPoint3f(objectPointsData);
+		MatOfPoint2f imagePoints = new MatOfPoint2f(imagePointsData);
+
+		Calib3d.solvePnP(objectPoints, imagePoints, cameraMatrix, distCoefficients, outRvec, outTvec);
+	}
+
+	
+	public void solveExtrinsicAndSave(String filename) {
+		CalibrationData calibData = load(filename);
+		
+		for (CameraSamplesSet samples: calibData.getCalibrationData()) {
+			CameraSetup.Intrinsic intrinsic = camerasConfig.get(samples.getCameraName()).getIntrinsic();
+			
+			Mat rvec = new Mat();
+			Mat tvec = new Mat();
+			solveExtrinsic(intrinsic.getCameraMatrix(), intrinsic.getDistCoefficients(), samples.getCalibrationSamples(), rvec, tvec);
+		}
+		
 		
 	}
 }
