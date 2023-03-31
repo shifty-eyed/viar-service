@@ -74,7 +74,7 @@ public class Monitor {
 		
 		doLoadAndCalibrate = new JButton("Load&Calibrate");
 		doLoadAndCalibrate.setBounds(430, 2, 120, 25);
-		doLoadAndCalibrate.addActionListener(e -> dataCollector.load(tfFileName.getText()));
+		doLoadAndCalibrate.addActionListener(e -> dataCollector.solveExtrinsicAndSave(tfFileName.getText()));
 		frame.add(doLoadAndCalibrate);
 		
 		tfFileName = new JTextField("samples.json");

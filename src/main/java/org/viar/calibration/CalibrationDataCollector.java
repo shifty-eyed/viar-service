@@ -4,8 +4,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,6 +28,7 @@ import org.springframework.stereotype.Component;
 import org.viar.calibration.model.CalibrationData;
 import org.viar.calibration.model.CalibrationSample;
 import org.viar.calibration.model.CameraSamplesSet;
+import org.viar.core.ConvertUtil;
 import org.viar.core.model.CameraSetup;
 import org.viar.core.model.MarkerRawPosition;
 
@@ -42,7 +43,7 @@ public class CalibrationDataCollector {
 	private static final String workingDir = "d:/ws/calib/";
 	private static final double inch = 0.0254;
 	
-	private Map<String, Set<CalibrationSample>> data;
+	private Map<String, List<CalibrationSample>> data;
 
 	@Autowired
 	private WorldCoordinatesPresets coordProvider;
@@ -65,9 +66,9 @@ public class CalibrationDataCollector {
 						 worldSpace.x, worldSpace.y, worldSpace.z);
 			 }).collect(Collectors.toSet());
 			 
-			 Set<CalibrationSample> existing = data.get(cameraId);
+			 List<CalibrationSample> existing = data.get(cameraId);
 			 if (existing == null) {
-				 existing = new HashSet<>();
+				 existing = new ArrayList<>();
 				 data.put(cameraId, existing);
 			 }
 			 existing.addAll(sampleSet);
@@ -88,7 +89,7 @@ public class CalibrationDataCollector {
 
 	}
 	
-	public CalibrationData load(String filename) {
+	private CalibrationData load(String filename) {
 		try (Reader in = new InputStreamReader(new FileInputStream(workingDir + filename))) {
 			return gson.fromJson(in, CalibrationData.class);
 		} catch (Exception e) {
@@ -119,6 +120,7 @@ public class CalibrationDataCollector {
 	
 	public void solveExtrinsicAndSave(String filename) {
 		CalibrationData calibData = load(filename);
+		StringBuilder sb = new StringBuilder();
 		
 		for (CameraSamplesSet samples: calibData.getCalibrationData()) {
 			CameraSetup.Intrinsic intrinsic = camerasConfig.get(samples.getCameraName()).getIntrinsic();
@@ -126,8 +128,16 @@ public class CalibrationDataCollector {
 			Mat rvec = new Mat();
 			Mat tvec = new Mat();
 			solveExtrinsic(intrinsic.getCameraMatrix(), intrinsic.getDistCoefficients(), samples.getCalibrationSamples(), rvec, tvec);
+			
+			sb.append(String.format("\"%s\":\nrvec: %s\ntvec: %s\n\n", samples.getCameraName(),
+					ConvertUtil.stringOfMatLine(rvec), ConvertUtil.stringOfMatLine(tvec)));
+			
 		}
-		
+		try (FileOutputStream out = new FileOutputStream(workingDir + "extrinsic-"+filename)) {
+			IOUtils.write(sb.toString(), out, "UTF-8");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 	}
 }

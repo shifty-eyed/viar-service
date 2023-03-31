@@ -25,7 +25,7 @@ import org.viar.ui.Monitor;
 @Component
 public class CameraProcessor {
 
-	private final int numCameras = 1;
+	private final int numCameras = 4;
 	
 	private final int frameWidthHalf = 1920 / 2;  
 	private final int frameHeightHalf = 1080 / 2;  
