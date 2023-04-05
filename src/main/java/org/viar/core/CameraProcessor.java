@@ -73,8 +73,7 @@ public class CameraProcessor {
 				time = System.currentTimeMillis() - time;
 
 				if (data != null) {
-					//sb.append("\n").append(objectPositionResolver.resolve(data).toString());
-					monitor.onChange(data, time);
+					monitor.onChange(data, objectPositionResolver.resolve(data), time);
 				}
 				Thread.yield();
 			}

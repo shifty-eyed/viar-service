@@ -42,12 +42,12 @@ public class CalibrationDataCollector {
 
 	private static final String workingDir = "d:/ws/calib/";
 	private static final double inch = 0.0254;
-	
+
 	private Map<String, List<CalibrationSample>> data;
 
 	@Autowired
 	private WorldCoordinatesPresets coordProvider;
-	
+
 	@Autowired
 	private Map<String, CameraSetup> camerasConfig;
 
@@ -58,21 +58,28 @@ public class CalibrationDataCollector {
 	}
 
 	public void submitDataSample(String presetName, Map<String, Collection<MarkerRawPosition>> sample) {
-		 sample.entrySet().forEach(e -> {
-			 final String cameraId = e.getKey();
-			 final Set<CalibrationSample> sampleSet = e.getValue().stream().map(raw -> {
-				 Point3d worldSpace =  coordProvider.getWorldCoords(presetName, raw.getMarkerId());
-				 return new CalibrationSample(raw.getPosition().x, raw.getPosition().y,
-						 worldSpace.x, worldSpace.y, worldSpace.z);
-			 }).collect(Collectors.toSet());
-			 
-			 List<CalibrationSample> existing = data.get(cameraId);
-			 if (existing == null) {
-				 existing = new ArrayList<>();
-				 data.put(cameraId, existing);
-			 }
-			 existing.addAll(sampleSet);
-		 });
+		sample.entrySet().forEach(e -> {
+			final String cameraId = e.getKey();
+			final Set<CalibrationSample> sampleSet = e.getValue().stream().map(raw -> {
+				Point3d worldSpace;
+				try {
+					worldSpace = coordProvider.getWorldCoords(presetName, raw.getMarkerId());
+				} catch (Exception e1) {
+					System.err.println(e1.getMessage());
+					return null;
+				}
+				return new CalibrationSample(raw.getPosition().x, raw.getPosition().y, worldSpace.x, worldSpace.y,
+						worldSpace.z);
+			}).filter(r -> r != null).collect(Collectors.toSet());
+
+			List<CalibrationSample> existing = data.get(cameraId);
+			if (existing == null) {
+				existing = new ArrayList<>();
+				data.put(cameraId, existing);
+			}
+			existing.addAll(sampleSet);
+		});
+		System.out.println("Captured: "+presetName+", cameras: "+sample.size());
 
 	}
 
@@ -88,56 +95,56 @@ public class CalibrationDataCollector {
 		}
 
 	}
-	
+
 	private CalibrationData load(String filename) {
 		try (Reader in = new InputStreamReader(new FileInputStream(workingDir + filename))) {
 			return gson.fromJson(in, CalibrationData.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
-		} 
+		}
 	}
-	
+
 	private void solveExtrinsic(Mat cameraMatrix, MatOfDouble distCoefficients, List<CalibrationSample> samples,
 			Mat outRvec, Mat outTvec) {
 		Point3[] objectPointsData = new Point3[samples.size()];
 		Point[] imagePointsData = new Point[samples.size()];
-		
+
 		final double unit = inch;
 		int i = 0;
-		
+
 		for (CalibrationSample sample : samples) {
 			objectPointsData[i] = new Point3(sample.getX() * unit, sample.getY() * unit, sample.getZ() * unit);
 			imagePointsData[i++] = new Point(sample.getU(), sample.getV());
 		}
-		
+
 		MatOfPoint3f objectPoints = new MatOfPoint3f(objectPointsData);
 		MatOfPoint2f imagePoints = new MatOfPoint2f(imagePointsData);
 
 		Calib3d.solvePnP(objectPoints, imagePoints, cameraMatrix, distCoefficients, outRvec, outTvec);
 	}
 
-	
 	public void solveExtrinsicAndSave(String filename) {
 		CalibrationData calibData = load(filename);
 		StringBuilder sb = new StringBuilder();
-		
-		for (CameraSamplesSet samples: calibData.getCalibrationData()) {
+
+		for (CameraSamplesSet samples : calibData.getCalibrationData()) {
 			CameraSetup.Intrinsic intrinsic = camerasConfig.get(samples.getCameraName()).getIntrinsic();
-			
+
 			Mat rvec = new Mat();
 			Mat tvec = new Mat();
-			solveExtrinsic(intrinsic.getCameraMatrix(), intrinsic.getDistCoefficients(), samples.getCalibrationSamples(), rvec, tvec);
-			
+			solveExtrinsic(intrinsic.getCameraMatrix(), intrinsic.getDistCoefficients(),
+					samples.getCalibrationSamples(), rvec, tvec);
+
 			sb.append(String.format("\"%s\":\nrvec: %s\ntvec: %s\n\n", samples.getCameraName(),
 					ConvertUtil.stringOfMatLine(rvec), ConvertUtil.stringOfMatLine(tvec)));
-			
+
 		}
-		try (FileOutputStream out = new FileOutputStream(workingDir + "extrinsic-"+filename)) {
+		try (FileOutputStream out = new FileOutputStream(workingDir + "extrinsic-" + filename)) {
 			IOUtils.write(sb.toString(), out, "UTF-8");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 }

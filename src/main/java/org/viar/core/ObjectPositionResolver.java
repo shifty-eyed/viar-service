@@ -1,7 +1,6 @@
 package org.viar.core;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +12,6 @@ import javax.vecmath.Vector3d;
 
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfDouble;
 import org.opencv.core.MatOfPoint2f;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -28,12 +26,6 @@ public class ObjectPositionResolver {
 	private static final double GOOD_ENOUGH_DOT_THRESHOLD = 0.05; //get rid of it
 
 	
-	static Mat CameraMatrixWin = CameraSetup.cvCameraMartix(1698.2, 1001.74, 606.883);
-	static MatOfDouble DistCoeffsWin = new MatOfDouble(0.185377, -1.04121, 0, 0, 1.09319);
-	
-	static Mat CameraMatrixTim = CameraSetup.cvCameraMartix(1763.01, 972.898, 440.798);
-	static MatOfDouble DistCoeffsTim = new MatOfDouble(0.215209, -1.3063, 0, 0, 1.56173);
-	
 	@Autowired
 	private Collection<MarkerNode> nodes;
 	
@@ -42,18 +34,13 @@ public class ObjectPositionResolver {
 	
 	@PostConstruct
 	private void init() {
-		MarkerNode n = new MarkerNode("head");
-		for (int i=0; i<10; i++)
+		nodes = new ArrayList<>();
+		for (int i=0; i<5; i++) {
+			MarkerNode n = new MarkerNode("marker"+i);
 			n.put(i, new Vector3d(0,0,0));
-		nodes = Arrays.asList(n);
-		camerasConfig = new HashMap<>(2);
-		camerasConfig.put("0", new CameraSetup("0", 0, new Vector3d(1.5,-1.1,1.5), new Vector3d(0,-1.1,1.5), new Vector3d(0,0,1), 
-				CameraMatrixWin, DistCoeffsWin,
-				new MatOfDouble(1.931, 0.0205, -0.01434), new MatOfDouble(-0.03032, 0.6279016, 3.0672747)));
-		camerasConfig.put("1", new CameraSetup("1", 1, new Vector3d(0,-2.5,1.5), new Vector3d(0,0,1.5), new Vector3d(0,0,1), 
-				CameraMatrixTim, DistCoeffsTim,
-				new MatOfDouble(1.3005590524914123, 1.1859894659, -1.100206455382724), new MatOfDouble(1.109858441, 1.34952034, 1.83912425)));
-		
+			nodes.add(n);
+		}
+			
 	}
 	
 	private MarkerNode getNodeIdByMarkerId(int markerId) {

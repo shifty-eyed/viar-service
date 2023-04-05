@@ -2,9 +2,11 @@ package org.viar.ui;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.swing.JButton;
@@ -14,11 +16,13 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.vecmath.Point3d;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.viar.calibration.CalibrationDataCollector;
 import org.viar.calibration.WorldCoordinatesPresets;
+import org.viar.core.model.MarkerNode;
 import org.viar.core.model.MarkerRawPosition;
 
 @Component
@@ -64,7 +68,12 @@ public class Monitor {
 		
 		doCapture = new JButton("Capture");
 		doCapture.setBounds(170, 2, 100, 25);
-		doCapture.addActionListener(e -> dataCollector.submitDataSample(presetSelect.getSelectedItem().toString(), mostRecentData));
+		doCapture.addActionListener(e -> {
+			dataCollector.submitDataSample(presetSelect.getSelectedItem().toString(), mostRecentData);
+			if (presetSelect.getSelectedIndex() < presetSelect.getItemCount() - 1) {
+				presetSelect.setSelectedIndex(presetSelect.getSelectedIndex() + 1);
+			}
+		});
 		frame.add(doCapture);
 		
 		doSave = new JButton("Save");
@@ -87,22 +96,34 @@ public class Monitor {
 		frame.setVisible(true);
 	}
 
-	public void onChange(Map<String, Collection<MarkerRawPosition>> data, long timeMillis) {
+	public void onChange(Map<String, Collection<MarkerRawPosition>> rawData, Map<MarkerNode, Point3d> resolved, long timeMillis) {
 		SwingUtilities.invokeLater(() -> {
-			mostRecentData = data;
+			mostRecentData = rawData;
 			
 			StringBuilder sb = new StringBuilder();
-			for (Map.Entry<String, Collection<MarkerRawPosition>> e : data.entrySet()) {
+			/*for (Map.Entry<String, Collection<MarkerRawPosition>> e : rawData.entrySet()) {
 				sb.append("cam-").append(e.getKey()).append("\n")
 						.append(e.getValue().stream().map(
 								(p) -> String.format("%d: (%.3f,%.3f)", p.getMarkerId(), p.getPosition().x, p.getPosition().y)
 						).collect(Collectors.joining(" "))).append("\n\n");
+			}*/
+			if (resolved != null) {
+				sb.append("\n\n");
+				List<MarkerNode> nodeKeys = new ArrayList<>(resolved.keySet());
+				Collections.sort(nodeKeys, (a, b) -> a.getId().compareTo(b.getId()));
+				for (MarkerNode k : nodeKeys) {
+					if (!"marker0".equals(k.getId()))
+							continue;
+					Point3d p = resolved.get(k);
+					sb.append(String.format("%s - %.3f, %.3f, %.3f\n", k.getId(), p.x, p.y, p.z));
+				}
 			}
 			
 			frame.setTitle("Camera calibration. Time: "+timeMillis);
 			label.setText(sb.toString());
 		});
-
 	}
+	
+	
 
 }

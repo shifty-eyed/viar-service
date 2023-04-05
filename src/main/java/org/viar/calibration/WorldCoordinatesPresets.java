@@ -1,6 +1,7 @@
 package org.viar.calibration;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -26,11 +27,11 @@ public class WorldCoordinatesPresets {
 		zCoordByMarkerId = new HashMap<>();
 		zCoordByMarkerId.put(0, 0.06985);
 		zCoordByMarkerId.put(1, 0.59055);
-		zCoordByMarkerId.put(2, 1.050925);
-		zCoordByMarkerId.put(3, 1.6002);
-		zCoordByMarkerId.put(4, 1.98755);
+		zCoordByMarkerId.put(2, 0.9652);
+		zCoordByMarkerId.put(3, 1.397);
+		zCoordByMarkerId.put(4, 1.793875);
 		
-		xyCoordByPresetName = new HashMap<>();
+		xyCoordByPresetName = new LinkedHashMap<>();
 		xyCoordByPresetName.put("a: 2,-1", f2m(2, -1));
 		xyCoordByPresetName.put("b: 3,-1", f2m(3, -1));
 		xyCoordByPresetName.put("c: 4,-1", f2m(4, -1));
