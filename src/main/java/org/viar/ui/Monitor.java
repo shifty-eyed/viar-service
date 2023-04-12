@@ -22,11 +22,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.viar.calibration.CalibrationDataCollector;
 import org.viar.calibration.WorldCoordinatesPresets;
+import org.viar.core.TrackingListener;
 import org.viar.core.model.MarkerNode;
 import org.viar.core.model.MarkerRawPosition;
 
 @Component
-public class Monitor {
+public class Monitor implements TrackingListener {
 
 	private JFrame frame;
 	private JTextArea label;
@@ -96,7 +97,8 @@ public class Monitor {
 		frame.setVisible(true);
 	}
 
-	public void onChange(Map<String, Collection<MarkerRawPosition>> rawData, Map<MarkerNode, Point3d> resolved, long timeMillis) {
+	@Override
+	public void trackingUpdated(Map<String, Collection<MarkerRawPosition>> rawData, Map<MarkerNode, Point3d> resolved, long timeMillis) {
 		SwingUtilities.invokeLater(() -> {
 			mostRecentData = rawData;
 			
@@ -112,7 +114,7 @@ public class Monitor {
 				List<MarkerNode> nodeKeys = new ArrayList<>(resolved.keySet());
 				Collections.sort(nodeKeys, (a, b) -> a.getId().compareTo(b.getId()));
 				for (MarkerNode k : nodeKeys) {
-					if (!"marker0".equals(k.getId()))
+					if (!"marker8".equals(k.getId()))
 							continue;
 					Point3d p = resolved.get(k);
 					sb.append(String.format("%s - %.3f, %.3f, %.3f\n", k.getId(), p.x, p.y, p.z));

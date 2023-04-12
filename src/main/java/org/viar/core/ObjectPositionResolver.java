@@ -35,7 +35,7 @@ public class ObjectPositionResolver {
 	@PostConstruct
 	private void init() {
 		nodes = new ArrayList<>();
-		for (int i=0; i<5; i++) {
+		for (int i=0; i<9; i++) {
 			MarkerNode n = new MarkerNode("marker"+i);
 			n.put(i, new Vector3d(0,0,0));
 			nodes.add(n);

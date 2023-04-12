@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import org.viar.core.model.CameraSetup;
 import org.viar.core.model.MarkerRawPosition;
 import org.viar.ui.Monitor;
+import org.viar.websockets.ServerWebSocketHandler;
 
 @Component
 public class CameraProcessor {
@@ -35,6 +36,9 @@ public class CameraProcessor {
 	private Monitor monitor;
 	
 	@Autowired
+	private ServerWebSocketHandler webSocketHandler;
+	
+	@Autowired
 	private ObjectPositionResolver objectPositionResolver;
 	
 	@Autowired
@@ -43,6 +47,7 @@ public class CameraProcessor {
 	private ExecutorService pool;
 	private ExecutorService mainLoopRunner;
 	private Map<Integer, String> deviceNumberToCameraName = new HashMap<>();
+	private Collection<TrackingListener> trackingListeners = new ArrayList<TrackingListener>();
 
 	@PostConstruct
 	private void init() {
@@ -51,6 +56,9 @@ public class CameraProcessor {
 		pool = Executors.newFixedThreadPool(numCameras);
 		init(numCameras, true);
 		mainLoopRunner.execute(mainLoop);
+		
+		trackingListeners.add(webSocketHandler);
+		trackingListeners.add(monitor);
 		
 		
 	}
@@ -73,7 +81,10 @@ public class CameraProcessor {
 				time = System.currentTimeMillis() - time;
 
 				if (data != null) {
-					monitor.onChange(data, objectPositionResolver.resolve(data), time);
+					var tracking = objectPositionResolver.resolve(data);
+					for (var listener : trackingListeners) {
+						listener.trackingUpdated(data, tracking, time);
+					}
 				}
 				Thread.yield();
 			}

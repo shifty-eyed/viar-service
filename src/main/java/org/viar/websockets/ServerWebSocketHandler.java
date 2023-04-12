@@ -1,28 +1,32 @@
 package org.viar.websockets;
 
-import org.slf4j.Logger;
+import java.io.IOException;
+import java.time.LocalTime;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
+import javax.vecmath.Point3d;
+
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.SubProtocolCapable;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import org.springframework.web.util.HtmlUtils;
-
-import java.io.IOException;
-import java.time.LocalTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
+import org.viar.core.TrackingListener;
+import org.viar.core.model.MarkerNode;
+import org.viar.core.model.MarkerRawPosition;
 
 @Component
-public class ServerWebSocketHandler extends TextWebSocketHandler implements SubProtocolCapable {
+public class ServerWebSocketHandler extends TextWebSocketHandler implements SubProtocolCapable, TrackingListener {
     
     private static final Logger log = LoggerFactory.getLogger(ServerWebSocketHandler.class);
     
@@ -74,4 +78,11 @@ public class ServerWebSocketHandler extends TextWebSocketHandler implements SubP
     public List<String> getSubProtocols() {
         return Collections.singletonList("subprotocol.demo.websocket");
     }
+
+	@Override
+	public void trackingUpdated(Map<String, Collection<MarkerRawPosition>> rawData, Map<MarkerNode, Point3d> resolved,
+			long timeMillis) {
+		// TODO Auto-generated method stub
+		
+	}
 }
