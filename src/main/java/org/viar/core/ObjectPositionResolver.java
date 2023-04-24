@@ -80,7 +80,7 @@ public class ObjectPositionResolver {
 	private Point3d resolveNodePosition(MarkerNode node, List<CameraSpaceMarkerPosition> registerList) {
 		CameraSpaceMarkerPosition[] stereoPair = findStereoPair(registerList);
 		if (stereoPair == null) {
-			return new Point3d();
+			return null;
 		}
 		Mat projMatrix1 = stereoPair[0].getCamera().getProjectionMatrix();
 		Mat projMatrix2 = stereoPair[1].getCamera().getProjectionMatrix();
@@ -144,7 +144,10 @@ public class ObjectPositionResolver {
 		
 		Map<MarkerNode, List<CameraSpaceMarkerPosition>> byNode = groupByMarkerNode(rawData);
 		for (Map.Entry<MarkerNode, List<CameraSpaceMarkerPosition>> e : byNode.entrySet()) {
-			result.put(e.getKey(), resolveNodePosition(e.getKey(), e.getValue()));
+			final var position = resolveNodePosition(e.getKey(), e.getValue());
+			if (position != null) {
+				result.put(e.getKey(), position);
+			}
 		}
 		return result;
 	}

@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.swing.JButton;
@@ -103,22 +104,21 @@ public class Monitor implements TrackingListener {
 			mostRecentData = rawData;
 			
 			StringBuilder sb = new StringBuilder();
-			/*for (Map.Entry<String, Collection<MarkerRawPosition>> e : rawData.entrySet()) {
-				sb.append("cam-").append(e.getKey()).append("\n")
-						.append(e.getValue().stream().map(
-								(p) -> String.format("%d: (%.3f,%.3f)", p.getMarkerId(), p.getPosition().x, p.getPosition().y)
-						).collect(Collectors.joining(" "))).append("\n\n");
-			}*/
 			if (resolved != null) {
 				sb.append("\n\n");
 				List<MarkerNode> nodeKeys = new ArrayList<>(resolved.keySet());
 				Collections.sort(nodeKeys, (a, b) -> a.getId().compareTo(b.getId()));
 				for (MarkerNode k : nodeKeys) {
-					if (!"marker8".equals(k.getId()))
-							continue;
 					Point3d p = resolved.get(k);
 					sb.append(String.format("%s - %.3f, %.3f, %.3f\n", k.getId(), p.x, p.y, p.z));
 				}
+			}
+			
+			for (Map.Entry<String, Collection<MarkerRawPosition>> e : rawData.entrySet()) {
+				sb.append("cam-").append(e.getKey()).append("\n")
+						.append(e.getValue().stream().map(
+								(p) -> String.format("%d: (%.3f,%.3f)", p.getMarkerId(), p.getPosition().x, p.getPosition().y)
+						).collect(Collectors.joining(" "))).append("\n\n");
 			}
 			
 			frame.setTitle("Camera calibration. Time: "+timeMillis);

@@ -13,7 +13,6 @@ import javax.vecmath.Point3d;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.SubProtocolCapable;
@@ -48,7 +47,7 @@ public class ServerWebSocketHandler extends TextWebSocketHandler implements SubP
         sessions.remove(session);
     }
     
-    @Scheduled(fixedRate = 10000)
+    //@Scheduled(fixedRate = 10000)
     void sendPeriodicMessages() throws IOException {
         for (WebSocketSession session : sessions) {
             if (session.isOpen()) {
@@ -82,7 +81,19 @@ public class ServerWebSocketHandler extends TextWebSocketHandler implements SubP
 	@Override
 	public void trackingUpdated(Map<String, Collection<MarkerRawPosition>> rawData, Map<MarkerNode, Point3d> resolved,
 			long timeMillis) {
-		// TODO Auto-generated method stub
+		
+		for (WebSocketSession session : sessions) {
+            if (session.isOpen() && !resolved.isEmpty()) {
+            	var point = resolved.values().iterator().next();
+                String broadcast = String.format("%.3f %.3f %.3f", point.x, point.y, point.z);
+                log.info("Server sends: {}", broadcast);
+                try {
+					session.sendMessage(new TextMessage(broadcast));
+				} catch (IOException e) {
+					log.error("Message sending failed: {}", e.getMessage());
+				}
+            }
+        }
 		
 	}
 }

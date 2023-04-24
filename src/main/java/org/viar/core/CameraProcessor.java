@@ -27,6 +27,7 @@ import org.viar.websockets.ServerWebSocketHandler;
 public class CameraProcessor {
 
 	private final int numCameras = 4;
+	private final long delay = 100;
 	
 	private final int frameWidthHalf = 1920 / 2;  
 	private final int frameHeightHalf = 1080 / 2;  
@@ -70,11 +71,8 @@ public class CameraProcessor {
 			for (;;) {
 				long time = System.currentTimeMillis();
 				try {
-					//data = processFramesMock();
 					data = processFrames();
-					/*if (data.size() == 2) {
-						System.out.println(data);
-					}*/
+					Thread.sleep(delay);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
