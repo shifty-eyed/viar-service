@@ -36,22 +36,17 @@ public class ObjectPositionResolver {
 	private void init() {
 		nodes = new ArrayList<>();
 		
-		/*MarkerNode n = new MarkerNode("node1");
+		MarkerNode n = new MarkerNode("node1");
 		n.put(0, new Vector3d(0,0,0));
 		n.put(3, new Vector3d(0,0,0));
-		nodes.add(n);*/
+		nodes.add(n);
 		
-		MarkerNode n = new MarkerNode("node");
+		/*MarkerNode n = new MarkerNode("node");
 		for (int i=0; i<90; i++) {
 			n.put(i, new Vector3d(0,0,0));
-			nodes.add(n);
 		}
-		
-		/*for (int i=0; i<9; i++) {
-			MarkerNode n = new MarkerNode("marker"+i);
-			n.put(i, new Vector3d(0,0,0));
-			nodes.add(n);
-		}*/
+		nodes.add(n);*/
+	
 			
 	}
 	

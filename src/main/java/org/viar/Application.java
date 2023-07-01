@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class Application {
 
 	public static void main(String[] args) throws Exception {
-		System.loadLibrary("cv-tracker");
+		//System.loadLibrary("cv-tracker");
 		nu.pattern.OpenCV.loadShared();
 		//SpringApplication.run(Application.class, args);
 		SpringApplicationBuilder builder = new SpringApplicationBuilder(Application.class);

@@ -1,10 +1,22 @@
 
-milestone1 - track one node and pass to unreal realtime
+DONE - milestone1 - track one node and pass to unreal realtime
 1. install 4 cameras - done
 2. calibrate intrinsic each cam using new board 
 3. calibrate extrinsic each of them (or all together)
 4. make sure stereo pair selection works
 5. print bigger aruco
+
+
+
+ms2 - body tracking, narrow distance range, unreal realtime
+1. better position cameras
+2. re-calibrate using new device
+3. detect body parts with ai lib - ok
+4. improve message communication with unreal
+5. unreal- control actor with skeleton
+
+
+
 
 
 Secchi disk detection, use cv.canny corner detector

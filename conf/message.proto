@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+message Envelope {
+    repeated TrackingData trackingData = 1;
+}
+
+message TrackingData {
+  string cameraName = 1;
+  repeated ArucoMarker arucoMarkers = 2;
+  repeated Body bodies = 3;
+}
+
+message ArucoMarker {
+  string id = 1;
+  repeated Point2f points = 2;
+}
+
+message Point2f {
+  float x = 1;
+  float y = 2;
+}
+
+message Body {
+  repeated Point2f points = 1;
+}

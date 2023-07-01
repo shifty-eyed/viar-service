@@ -17,13 +17,12 @@ import javax.annotation.PostConstruct;
 
 import org.opencv.core.Point;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.viar.core.model.CameraSetup;
 import org.viar.core.model.MarkerRawPosition;
 import org.viar.ui.Monitor;
 import org.viar.websockets.ServerWebSocketHandler;
 
-@Component
+//@Component
 public class CameraProcessor {
 
 	private final int numCameras = 4;
