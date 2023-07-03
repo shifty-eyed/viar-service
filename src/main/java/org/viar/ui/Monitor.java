@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
@@ -36,6 +37,7 @@ public class Monitor implements TrackingListener {
 	private JButton doCapture;
 	private JButton doSave;
 	private JButton doLoadAndCalibrate;
+	private JCheckBox doStartStopTracking;
 	private JTextField tfFileName;
 	
 	@Autowired
@@ -88,6 +90,10 @@ public class Monitor implements TrackingListener {
 		doLoadAndCalibrate.addActionListener(e -> dataCollector.solveExtrinsicAndSave(tfFileName.getText()));
 		frame.add(doLoadAndCalibrate);
 		
+		doStartStopTracking = new JCheckBox("Tracking");
+		doStartStopTracking.setBounds(550, 2, 120, 25);
+		frame.add(doStartStopTracking);
+		
 		tfFileName = new JTextField("samples.json");
 		tfFileName.setBounds(600, 2, 200, 25);
 		frame.add(tfFileName);
@@ -126,6 +132,14 @@ public class Monitor implements TrackingListener {
 		});
 	}
 	
+	public void show(String text) {
+		SwingUtilities.invokeLater(() -> {
+			label.setText(text);
+		});
+	}
 	
+	public boolean isTracking() {
+		return doStartStopTracking.isSelected();
+	}
 
 }

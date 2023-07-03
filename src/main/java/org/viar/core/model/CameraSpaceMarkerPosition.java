@@ -8,6 +8,7 @@ import lombok.ToString;
 
 @ToString
 @EqualsAndHashCode
+@Deprecated
 public class CameraSpaceMarkerPosition {
 	
 	private final int frameWidthHalf = 1920 / 2;  

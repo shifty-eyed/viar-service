@@ -6,12 +6,21 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+import org.viar.core.ObjectPositionResolver;
+import org.viar.core.model.CameraSpaceSamples;
+import org.viar.ui.Monitor;
+
+import com.google.gson.Gson;
 
 @Component
 public class HubServer {
@@ -19,9 +28,19 @@ public class HubServer {
 	private ServerSocket serverSocket;
 	private ExecutorService mainLoopRunner;
 	private ExecutorService clientPool;
+	private Gson gson;
+	
+	@Autowired
+	private ObjectPositionResolver objectPositionResolver;
+	
+	
+	@Autowired
+	private Monitor monitor;
+	
 
 	@PostConstruct
 	public void init() throws IOException {
+		gson = new Gson();
 		mainLoopRunner = Executors.newSingleThreadExecutor();
 		clientPool = Executors.newCachedThreadPool();
 		serverSocket = new ServerSocket(2023);
@@ -59,8 +78,13 @@ public class HubServer {
 				PrintWriter out = new PrintWriter(socket.getOutputStream());
 
 				clientLoop: while (true) {
-					out.println("go");
-					out.flush();
+					if (monitor.isTracking()) {
+						out.println("go");
+						out.flush();
+					} else {
+						Thread.yield();
+						continue;
+					}
 					
 					while(true) {
 						String data = in.readLine();
@@ -71,17 +95,17 @@ public class HubServer {
 						}
 					};
 					
-					StringBuilder sb = new StringBuilder();
+					List<CameraSpaceSamples> data = new ArrayList<>();
 					while(true) {
-						String data = in.readLine();
-						if ("end".equals(data)) {
+						String text = in.readLine();
+						if ("end".equals(text)) {
+							monitor.show(StringUtils.collectionToCommaDelimitedString(data));
 							break;
 						}
-						sb.append(data);
-						sb.append("\n");
+						data.add(gson.fromJson(text, CameraSpaceSamples.class));
 					};
 					
-					System.out.println("Received from client: " + sb.toString());
+					//System.out.println("Received from client: " + sb.toString());
 				}
 
 				socket.close();
@@ -94,5 +118,5 @@ public class HubServer {
 		}
 		
 	}
-	
+
 }
