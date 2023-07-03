@@ -37,7 +37,8 @@ public class Monitor implements TrackingListener {
 	private JButton doCapture;
 	private JButton doSave;
 	private JButton doLoadAndCalibrate;
-	private JCheckBox doStartStopTracking;
+	private JCheckBox chkStartStopTracking;
+	private JCheckBox chkShutdownTrackers;
 	private JTextField tfFileName;
 	
 	@Autowired
@@ -71,7 +72,7 @@ public class Monitor implements TrackingListener {
 		frame.add(presetSelect);
 		
 		doCapture = new JButton("Capture");
-		doCapture.setBounds(170, 2, 100, 25);
+		doCapture.setBounds(180, 2, 80, 25);
 		doCapture.addActionListener(e -> {
 			dataCollector.submitDataSample(presetSelect.getSelectedItem().toString(), mostRecentData);
 			if (presetSelect.getSelectedIndex() < presetSelect.getItemCount() - 1) {
@@ -81,22 +82,26 @@ public class Monitor implements TrackingListener {
 		frame.add(doCapture);
 		
 		doSave = new JButton("Save");
-		doSave.setBounds(300, 2, 100, 25);
+		doSave.setBounds(260, 2, 70, 25);
 		doSave.addActionListener(e -> dataCollector.save(tfFileName.getText()));
 		frame.add(doSave);
 		
 		doLoadAndCalibrate = new JButton("Load&Calibrate");
-		doLoadAndCalibrate.setBounds(430, 2, 120, 25);
+		doLoadAndCalibrate.setBounds(330, 2, 100, 25);
 		doLoadAndCalibrate.addActionListener(e -> dataCollector.solveExtrinsicAndSave(tfFileName.getText()));
 		frame.add(doLoadAndCalibrate);
 		
-		doStartStopTracking = new JCheckBox("Tracking");
-		doStartStopTracking.setBounds(550, 2, 120, 25);
-		frame.add(doStartStopTracking);
-		
 		tfFileName = new JTextField("samples.json");
-		tfFileName.setBounds(600, 2, 200, 25);
+		tfFileName.setBounds(450, 2, 180, 25);
 		frame.add(tfFileName);
+		
+		chkStartStopTracking = new JCheckBox("Tracking");
+		chkStartStopTracking.setBounds(640, 2, 80, 25);
+		frame.add(chkStartStopTracking);
+		
+		chkShutdownTrackers = new JCheckBox("ShutdownTrackers");
+		chkShutdownTrackers.setBounds(720, 2, 120, 25);
+		frame.add(chkShutdownTrackers);
 		
 		frame.setSize(1800, 800);
 		frame.setResizable(false);
@@ -139,7 +144,11 @@ public class Monitor implements TrackingListener {
 	}
 	
 	public boolean isTracking() {
-		return doStartStopTracking.isSelected();
+		return chkStartStopTracking.isSelected();
+	}
+	
+	public boolean isShutdownTrackers() {
+		return chkShutdownTrackers.isSelected();
 	}
 
 }

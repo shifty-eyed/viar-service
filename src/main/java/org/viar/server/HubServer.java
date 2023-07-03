@@ -23,7 +23,7 @@ import org.viar.ui.Monitor;
 import com.google.gson.Gson;
 
 @Component
-public class HubServer {
+public class HubServer{
 	
 	private ServerSocket serverSocket;
 	private ExecutorService mainLoopRunner;
@@ -33,11 +33,9 @@ public class HubServer {
 	@Autowired
 	private ObjectPositionResolver objectPositionResolver;
 	
-	
 	@Autowired
 	private Monitor monitor;
 	
-
 	@PostConstruct
 	public void init() throws IOException {
 		gson = new Gson();
@@ -51,6 +49,13 @@ public class HubServer {
 		@Override
 		public void run() {
 			while (true) {
+				if (monitor.isShutdownTrackers()) {
+					System.out.println("Idle..");
+					try {
+						Thread.sleep(5000);
+					} catch (InterruptedException e) {}
+					continue;
+				}
 				try {
 					Socket socket = serverSocket.accept();
 					System.out.println("New client connected: " + socket.getInetAddress().getHostAddress());
@@ -76,10 +81,14 @@ public class HubServer {
 			try {
 				BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				PrintWriter out = new PrintWriter(socket.getOutputStream());
+				List<CameraSpaceSamples> data = new ArrayList<>();
 
 				clientLoop: while (true) {
-					if (monitor.isTracking()) {
-						out.println("go");
+					if (monitor.isShutdownTrackers()) {
+						out.print("shutdown");
+						out.flush();
+					} else if (monitor.isTracking()) {
+						out.print("go");
 						out.flush();
 					} else {
 						Thread.yield();
@@ -87,27 +96,25 @@ public class HubServer {
 					}
 					
 					while(true) {
-						String data = in.readLine();
-						if ("close".equals(data)) {
+						String cmd = in.readLine();
+						if ("close".equals(cmd)) {
 							break clientLoop;
-						} else if ("begin".equals(data)) {
+						} else if ("begin".equals(cmd)) {
 							break;
 						}
 					};
 					
-					List<CameraSpaceSamples> data = new ArrayList<>();
 					while(true) {
 						String text = in.readLine();
 						if ("end".equals(text)) {
-							monitor.show(StringUtils.collectionToCommaDelimitedString(data));
 							break;
 						}
 						data.add(gson.fromJson(text, CameraSpaceSamples.class));
 					};
 					
-					//System.out.println("Received from client: " + sb.toString());
+					monitor.show(StringUtils.collectionToCommaDelimitedString(data));
+					data.clear();
 				}
-
 				socket.close();
 				System.out.println("Client disconnected: " + socket.getInetAddress().getHostAddress());
 			} catch (IOException e) {
