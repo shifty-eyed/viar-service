@@ -1,10 +1,12 @@
 package org.viar.core.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 
 
 @Data
+@AllArgsConstructor
 public class WorldSpaceVertex {
 	
 	private String group; //or type body1, body2, aruco100

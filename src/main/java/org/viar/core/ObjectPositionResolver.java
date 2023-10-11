@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
-import javax.vecmath.Point3d;
 
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.Mat;
@@ -46,11 +45,17 @@ public class ObjectPositionResolver {
 		if (stereoPair == null) {
 			return null;
 		}
-		Mat projMatrix1 = stereoPair[0].getCamera().getProjectionMatrix();
-		Mat projMatrix2 = stereoPair[1].getCamera().getProjectionMatrix();
 		
-		MatOfPoint2f imagePoint1 = new MatOfPoint2f(stereoPair[0].getRawPosition());
-		MatOfPoint2f imagePoint2 = new MatOfPoint2f(stereoPair[1].getRawPosition());
+		CameraSpaceVertex v1 = stereoPair[0];
+		CameraSpaceVertex v2 = stereoPair[1];
+		CameraSetup c1 = camerasConfig.get(v1.getCameraName());
+		CameraSetup c2 = camerasConfig.get(v2.getCameraName());
+		
+		Mat projMatrix1 = c1.getProjectionMatrix();
+		Mat projMatrix2 = c2.getProjectionMatrix();
+		
+		MatOfPoint2f imagePoint1 = new MatOfPoint2f(new Point(v1.getX(), v1.getY()));
+		MatOfPoint2f imagePoint2 = new MatOfPoint2f(new Point(v2.getX(), v2.getY()));
 		
 		Mat resultMat = new Mat();
 		Calib3d.triangulatePoints(projMatrix1, projMatrix2, imagePoint1, imagePoint2, resultMat);
@@ -71,8 +76,8 @@ public class ObjectPositionResolver {
 		
 		final double inch = 0.0254;
 		
-		return new Point3d((x / w) / inch, (y / w) / inch, (z / w) / inch);
-		
+		//return new Point3d((x / w) / inch, (y / w) / inch, (z / w) / inch);
+		return new WorldSpaceVertex(v1.getGroup(), v1.getId(), (x / w) / inch, (y / w) / inch, (z / w) / inch);
 	}
 	
 	static void log(String msg) {
@@ -84,20 +89,22 @@ public class ObjectPositionResolver {
 		CameraSpaceVertex[] bestCandidates = new CameraSpaceVertex[2];
 		boolean found = false;
 		
-		for (CameraSpaceVertex c1 : registerList) {
-			for (CameraSpaceVertex c2 : registerList) {
-				if (c1 == c2) {
+		for (CameraSpaceVertex v1 : registerList) {
+			for (CameraSpaceVertex v2 : registerList) {
+				if (v1 == v2) {
 					break;
 				}
 				//to find best candidates for stereo pair need to take into account not just direction vector from camera position
 				//but also pixel coordinates and how far are they from the center
 				
-				//TODO get camera details, maybe right from camera matrix
-				double dot = Math.abs(c1.getCamera().getDirection().dot(c2.getCamera().getDirection()));
+				CameraSetup c1 = camerasConfig.get(v1.getCameraName());
+				CameraSetup c2 = camerasConfig.get(v2.getCameraName());
+				
+				double dot = Math.abs(c1.getDirection().dot(c2.getDirection()));
 				if (bestDot - dot > GOOD_ENOUGH_DOT_THRESHOLD) {//this is rough way
 					bestDot = dot;
-					bestCandidates[0] = c1;
-					bestCandidates[1] = c2;
+					bestCandidates[0] = v1;
+					bestCandidates[1] = v2;
 					found = true;
 				}
 			}
