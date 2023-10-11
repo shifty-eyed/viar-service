@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.viar.core.ObjectPositionResolver;
-import org.viar.core.model.CameraSpaceSamples;
+import org.viar.core.model.CameraSpaceFrame;
 import org.viar.ui.Monitor;
 
 import com.google.gson.Gson;
@@ -81,7 +81,7 @@ public class HubServer{
 			try {
 				BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				PrintWriter out = new PrintWriter(socket.getOutputStream());
-				List<CameraSpaceSamples> data = new ArrayList<>();
+				List<CameraSpaceFrame> frame = new ArrayList<>();
 
 				clientLoop: while (true) {
 					if (monitor.isShutdownTrackers()) {
@@ -109,11 +109,11 @@ public class HubServer{
 						if ("end".equals(text)) {
 							break;
 						}
-						data.add(gson.fromJson(text, CameraSpaceSamples.class));
+						frame.add(gson.fromJson(text, CameraSpaceFrame.class));
 					};
 					
-					monitor.show(StringUtils.collectionToCommaDelimitedString(data));
-					data.clear();
+					monitor.show(StringUtils.collectionToCommaDelimitedString(frame));
+					frame.clear();
 				}
 				socket.close();
 				System.out.println("Client disconnected: " + socket.getInetAddress().getHostAddress());

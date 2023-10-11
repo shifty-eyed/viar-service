@@ -2,23 +2,25 @@ package org.viar.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.vecmath.Point3d;
-import javax.vecmath.Vector3d;
 
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint2f;
+import org.opencv.core.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.viar.core.model.CameraSetup;
-import org.viar.core.model.CameraSpaceMarkerPosition;
-import org.viar.core.model.MarkerNode;
-import org.viar.core.model.MarkerRawPosition;
+import org.viar.core.model.CameraSpaceArucoMarker;
+import org.viar.core.model.CameraSpaceBodyPose;
+import org.viar.core.model.CameraSpaceFrame;
+import org.viar.core.model.CameraSpaceVertex;
+import org.viar.core.model.WorldSpaceVertex;
 
 @Component
 public class ObjectPositionResolver {
@@ -27,65 +29,20 @@ public class ObjectPositionResolver {
 
 	
 	@Autowired
-	private Collection<MarkerNode> nodes;
-	
-	@Autowired
 	private Map<String, CameraSetup> camerasConfig;
 	
 	@PostConstruct
 	private void init() {
-		nodes = new ArrayList<>();
-		
-		MarkerNode n = new MarkerNode("node1");
-		n.put(0, new Vector3d(0,0,0));
-		n.put(3, new Vector3d(0,0,0));
-		nodes.add(n);
-		
 		/*MarkerNode n = new MarkerNode("node");
 		for (int i=0; i<90; i++) {
 			n.put(i, new Vector3d(0,0,0));
 		}
 		nodes.add(n);*/
-	
 			
 	}
 	
-	private MarkerNode getNodeIdByMarkerId(int markerId) {
-		for (MarkerNode node : nodes) {
-			if (node.getMarkerIds().contains(markerId)) {
-				return node;
-			}
-		}
-		return null;
-		//throw new IllegalArgumentException("Not found markerId=" + markerId);
-	}
-	
-	private Map<MarkerNode, List<CameraSpaceMarkerPosition>> groupByMarkerNode(Map<String, Collection<MarkerRawPosition>> rawData) {
-
-		Map<MarkerNode, List<CameraSpaceMarkerPosition>> result = new HashMap<>();
-		
-		rawData.entrySet().forEach((cameraToMarkers) -> {
-			final String cameraId = cameraToMarkers.getKey();
-			
-			cameraToMarkers.getValue().forEach((markerRawPosition) -> {
-				MarkerNode node = getNodeIdByMarkerId(markerRawPosition.getMarkerId());
-				if (node != null) {
-					List<CameraSpaceMarkerPosition> entries = result.get(node);
-					if (entries == null) {
-						entries = new ArrayList<>();
-						result.put(node, entries);
-					}
-					entries.add(new CameraSpaceMarkerPosition(camerasConfig.get(cameraId), markerRawPosition.getMarkerId(), markerRawPosition.getPosition()));
-				}
-			});
-			
-		});
-		
-		return result;
-	}
-	
-	private Point3d resolveNodePosition(MarkerNode node, List<CameraSpaceMarkerPosition> registerList) {
-		CameraSpaceMarkerPosition[] stereoPair = findStereoPair(registerList);
+	private WorldSpaceVertex resolveWorldSpaceVertex(List<CameraSpaceVertex> registerList) {
+		CameraSpaceVertex[] stereoPair = findStereoPair(registerList);
 		if (stereoPair == null) {
 			return null;
 		}
@@ -122,18 +79,20 @@ public class ObjectPositionResolver {
 		System.out.println(msg);
 	}
 	
-	private CameraSpaceMarkerPosition[] findStereoPair(List<CameraSpaceMarkerPosition> registerList) {
+	private CameraSpaceVertex[] findStereoPair(List<CameraSpaceVertex> registerList) {
 		double bestDot = 1.0;
-		CameraSpaceMarkerPosition[] bestCandidates = new CameraSpaceMarkerPosition[2];
+		CameraSpaceVertex[] bestCandidates = new CameraSpaceVertex[2];
 		boolean found = false;
 		
-		for (CameraSpaceMarkerPosition c1 : registerList) {
-			for (CameraSpaceMarkerPosition c2 : registerList) {
+		for (CameraSpaceVertex c1 : registerList) {
+			for (CameraSpaceVertex c2 : registerList) {
 				if (c1 == c2) {
 					break;
 				}
 				//to find best candidates for stereo pair need to take into account not just direction vector from camera position
 				//but also pixel coordinates and how far are they from the center
+				
+				//TODO get camera details, maybe right from camera matrix
 				double dot = Math.abs(c1.getCamera().getDirection().dot(c2.getCamera().getDirection()));
 				if (bestDot - dot > GOOD_ENOUGH_DOT_THRESHOLD) {//this is rough way
 					bestDot = dot;
@@ -146,14 +105,42 @@ public class ObjectPositionResolver {
 		return found ? bestCandidates : null;
 	}
 	
-	public Map<MarkerNode, Point3d> resolve(Map<String, Collection<MarkerRawPosition>> rawData) {
-		Map<MarkerNode, Point3d> result = new HashMap<>();
+	private Map<Object, List<CameraSpaceVertex>> groupCameraSpaceVertices(Collection<CameraSpaceFrame> rawData) {
+		Collection<CameraSpaceVertex> result = new ArrayList<>();
+		for (CameraSpaceFrame frame : rawData) {
+			for (CameraSpaceArucoMarker aruco : frame.getArucos()) {
+				//TODO: aruco conversion to markerNode, use single camera aruco offset maybe on previous step
+				// to convert aruco 4 corners and normal vector to single point but not necessary in the middle of aruco marker  
+			}
+			for (CameraSpaceBodyPose body : frame.getBodies()) {
+				int i = 0; 
+				for (Point p : body.getPoints()) {
+					CameraSpaceVertex v = new CameraSpaceVertex();
+					v.setCameraName(frame.getCameraName());
+					v.setGroup("body" + body.getId());
+					v.setId(i++);
+					v.setX(p.x);
+					v.setY(p.y);
+					result.add(v);
+				}
+				
+			}
+		}
+		return result.stream().collect(Collectors.groupingBy(v -> v.getUniqueName()));
+	}
+	
+	public Collection<WorldSpaceVertex> resolve(Collection<CameraSpaceFrame> rawData) {
+		Collection<WorldSpaceVertex> result = new ArrayList<>();
 		
-		Map<MarkerNode, List<CameraSpaceMarkerPosition>> byNode = groupByMarkerNode(rawData);
-		for (Map.Entry<MarkerNode, List<CameraSpaceMarkerPosition>> e : byNode.entrySet()) {
-			final var position = resolveNodePosition(e.getKey(), e.getValue());
+		Map<Object, List<CameraSpaceVertex>> cameraSpaceNodes = groupCameraSpaceVertices(rawData);
+		
+		for (List<CameraSpaceVertex> cameraVertices : cameraSpaceNodes.values()) {
+			if (cameraVertices.size() < 2) {
+				continue;
+			}
+			final var position = resolveWorldSpaceVertex(cameraVertices);
 			if (position != null) {
-				result.put(e.getKey(), position);
+				result.add(position);
 			}
 		}
 		return result;

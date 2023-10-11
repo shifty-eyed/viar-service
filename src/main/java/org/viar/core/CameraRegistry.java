@@ -3,8 +3,6 @@ package org.viar.core;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +18,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.viar.core.model.CameraSetup;
-import org.viar.core.model.MarkerNode;
 
 import com.google.gson.Gson;
 
@@ -95,25 +92,5 @@ public class CameraRegistry {
         }
 		return result;
 	}
-	
-	@Bean
-	public Collection<MarkerNode> nodes() throws IOException {
-		Collection<MarkerNode> result = new ArrayList<>();
-		try(InputStream in = nodesFile.getInputStream()) {
-			final String data = IOUtils.toString(in, StandardCharsets.UTF_8);
-			Gson gson = new Gson();
-			Map<String, Map<String, Object>> rawDict = gson.fromJson(data, Map.class);
-			
-			for (Map.Entry<String, Map<String, Object>> nodeData : rawDict.entrySet()) {
-				MarkerNode node = new MarkerNode(nodeData.getKey());
-				for (String markerId : nodeData.getValue().keySet()) {
-					node.put(Integer.parseInt(markerId), parseVector3d(markerId, nodeData.getValue()));
-				}
-				result.add(node);
-			}
-		}
-		return result;
-	}
-	
 
 }

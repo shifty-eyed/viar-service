@@ -5,7 +5,7 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class CameraSpaceSamples {
+public class CameraSpaceFrame {
 	private String cameraName;
 	private List<CameraSpaceArucoMarker> arucos;
 	private List<CameraSpaceBodyPose> bodies;
