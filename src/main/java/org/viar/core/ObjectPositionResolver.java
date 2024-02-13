@@ -101,7 +101,7 @@ public class ObjectPositionResolver {
 				CameraSetup c2 = camerasConfig.get(v2.getCameraName());
 				
 				double dot = Math.abs(c1.getDirection().dot(c2.getDirection()));
-				if (bestDot - dot > GOOD_ENOUGH_DOT_THRESHOLD) {//this is rough way
+				if (bestDot - dot > GOOD_ENOUGH_DOT_THRESHOLD) { //this is a rough way
 					bestDot = dot;
 					bestCandidates[0] = v1;
 					bestCandidates[1] = v2;
@@ -117,14 +117,15 @@ public class ObjectPositionResolver {
 		for (CameraSpaceFrame frame : rawData) {
 			for (CameraSpaceArucoMarker aruco : frame.getArucos()) {
 				//TODO: aruco conversion to markerNode, use single camera aruco offset maybe on previous step
-				// to convert aruco 4 corners and normal vector to single point but not necessary in the middle of aruco marker  
+				// to convert aruco 4 corners and normal vector to single point
+				// which will be not necessary in the middle of aruco marker, rather projection of aruco center to the normal vector
 			}
 			for (CameraSpaceBodyPose body : frame.getBodies()) {
 				int i = 0; 
 				for (Point p : body.getPoints()) {
 					CameraSpaceVertex v = new CameraSpaceVertex();
 					v.setCameraName(frame.getCameraName());
-					v.setObject("body" + body.getId());
+					v.setObjectName("body" + body.getId());
 					v.setId(i++);
 					v.setX(p.x);
 					v.setY(p.y);

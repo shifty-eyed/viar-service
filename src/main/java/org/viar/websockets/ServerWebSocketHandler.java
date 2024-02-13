@@ -21,6 +21,8 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import org.springframework.web.util.HtmlUtils;
 import org.viar.core.TrackingListener;
+import org.viar.core.model.CameraSpaceFrame;
+import org.viar.core.model.WorldSpaceVertex;
 
 @Component
 public class ServerWebSocketHandler extends TextWebSocketHandler implements SubProtocolCapable, TrackingListener {
@@ -77,13 +79,12 @@ public class ServerWebSocketHandler extends TextWebSocketHandler implements SubP
     }
 
 	@Override
-	public void trackingUpdated(Map<String, Collection<MarkerRawPosition>> rawData, Map<MarkerNode, Point3d> resolved,
-			long timeMillis) {
-		
+	public void trackingUpdated(Collection<CameraSpaceFrame> rawData, Collection<WorldSpaceVertex> resolved, long timeMillis) {
+		//Sending to unreal
 		for (WebSocketSession session : sessions) {
             if (session.isOpen() && !resolved.isEmpty()) {
-            	var point = resolved.values().iterator().next();
-                String broadcast = String.format("%.3f %.3f %.3f", point.x, point.y, point.z);
+            	var point = resolved.iterator().next(); //TODO make it work for multiple points
+                String broadcast = String.format("%.3f %.3f %.3f", point.getX(), point.getY(), point.getZ());
                 log.info("Server sends: {}", broadcast);
                 try {
 					session.sendMessage(new TextMessage(broadcast));
