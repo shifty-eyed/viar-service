@@ -21,8 +21,6 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import org.springframework.web.util.HtmlUtils;
 import org.viar.core.TrackingListener;
-import org.viar.core.model.MarkerNode;
-import org.viar.core.model.MarkerRawPosition;
 
 @Component
 public class ServerWebSocketHandler extends TextWebSocketHandler implements SubProtocolCapable, TrackingListener {

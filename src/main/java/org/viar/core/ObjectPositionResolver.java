@@ -77,7 +77,7 @@ public class ObjectPositionResolver {
 		final double inch = 0.0254;
 		
 		//return new Point3d((x / w) / inch, (y / w) / inch, (z / w) / inch);
-		return new WorldSpaceVertex(v1.getGroup(), v1.getId(), (x / w) / inch, (y / w) / inch, (z / w) / inch);
+		return new WorldSpaceVertex(v1.getObject(), v1.getId(), (x / w) / inch, (y / w) / inch, (z / w) / inch);
 	}
 	
 	static void log(String msg) {
@@ -124,7 +124,7 @@ public class ObjectPositionResolver {
 				for (Point p : body.getPoints()) {
 					CameraSpaceVertex v = new CameraSpaceVertex();
 					v.setCameraName(frame.getCameraName());
-					v.setGroup("body" + body.getId());
+					v.setObject("body" + body.getId());
 					v.setId(i++);
 					v.setX(p.x);
 					v.setY(p.y);

@@ -1,12 +1,8 @@
-package org.viar.ui;
+package org.viar.calibration.ui;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -18,18 +14,17 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.vecmath.Point3d;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.viar.calibration.CalibrationDataCollector;
 import org.viar.calibration.WorldCoordinatesPresets;
 import org.viar.core.TrackingListener;
-import org.viar.core.model.MarkerNode;
-import org.viar.core.model.MarkerRawPosition;
+import org.viar.core.model.CameraSpaceFrame;
+import org.viar.core.model.WorldSpaceVertex;
 
 @Component
-public class Monitor implements TrackingListener {
+public class CalibrationEditor implements TrackingListener {
 
 	private JFrame frame;
 	private JTextArea label;
@@ -47,7 +42,7 @@ public class Monitor implements TrackingListener {
 	@Autowired
 	private CalibrationDataCollector dataCollector;
 	
-	private Map<String, Collection<MarkerRawPosition>> mostRecentData;
+	private Collection<CameraSpaceFrame> cameraSpaceSamples;
 
 	@PostConstruct
 	private void init() throws Exception {
@@ -74,7 +69,7 @@ public class Monitor implements TrackingListener {
 		doCapture = new JButton("Capture");
 		doCapture.setBounds(180, 2, 80, 25);
 		doCapture.addActionListener(e -> {
-			dataCollector.submitDataSample(presetSelect.getSelectedItem().toString(), mostRecentData);
+			dataCollector.submitDataSample(presetSelect.getSelectedItem().toString(), cameraSpaceSamples);
 			if (presetSelect.getSelectedIndex() < presetSelect.getItemCount() - 1) {
 				presetSelect.setSelectedIndex(presetSelect.getSelectedIndex() + 1);
 			}
@@ -110,25 +105,22 @@ public class Monitor implements TrackingListener {
 	}
 
 	@Override
-	public void trackingUpdated(Map<String, Collection<MarkerRawPosition>> rawData, Map<MarkerNode, Point3d> resolved, long timeMillis) {
+	public void trackingUpdated(Collection<CameraSpaceFrame> rawData, Collection<WorldSpaceVertex> resolved, long timeMillis) {
 		SwingUtilities.invokeLater(() -> {
-			mostRecentData = rawData;
+			cameraSpaceSamples = rawData;
 			
 			StringBuilder sb = new StringBuilder();
 			if (resolved != null) {
 				sb.append("\n\n");
-				List<MarkerNode> nodeKeys = new ArrayList<>(resolved.keySet());
-				Collections.sort(nodeKeys, (a, b) -> a.getId().compareTo(b.getId()));
-				for (MarkerNode k : nodeKeys) {
-					Point3d p = resolved.get(k);
-					sb.append(String.format("%s - %.3f, %.3f, %.3f\n", k.getId(), p.x, p.y, p.z));
+				for (WorldSpaceVertex k : resolved) {
+					sb.append(String.format("%s - %.3f, %.3f, %.3f\n", k.getId(), k.getX(), k.getY(), k.getZ()));
 				}
 			}
 			
-			for (Map.Entry<String, Collection<MarkerRawPosition>> e : rawData.entrySet()) {
-				sb.append("cam-").append(e.getKey()).append("\n")
-						.append(e.getValue().stream().map(
-								(p) -> String.format("%d: (%.3f,%.3f)", p.getMarkerId(), p.getPosition().x, p.getPosition().y)
+			for (CameraSpaceFrame e : rawData) {
+				sb.append("cam-").append(e.getCameraName()).append("\n")
+						.append(e.getArucos().stream().map(
+								(p) -> String.format("%d: (%.3f,%.3f)", p.getId(), p.getX(), p.getY())
 						).collect(Collectors.joining(" "))).append("\n\n");
 			}
 			

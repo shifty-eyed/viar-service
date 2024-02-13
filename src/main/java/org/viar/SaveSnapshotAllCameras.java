@@ -16,7 +16,7 @@ public class SaveSnapshotAllCameras {
 	
 
 	public static void main(String[] args) throws Exception {
-		nu.pattern.OpenCV.loadShared();
+		System.loadLibrary("opencv_java490");
 		
 		Mat CameraMatrixWin = CameraSetup.cvCameraMartix(1698.2, 1001.74, 606.883);
 		MatOfDouble DistCoeffsWin = new MatOfDouble(0.185377, -1.04121, 0, 0, 1.09319);

@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.viar.core.ObjectPositionResolver;
 import org.viar.core.model.CameraSpaceFrame;
-import org.viar.ui.Monitor;
+import org.viar.calibration.ui.CalibrationEditor;
 
 import com.google.gson.Gson;
 
@@ -34,7 +34,7 @@ public class HubServer{
 	private ObjectPositionResolver objectPositionResolver;
 	
 	@Autowired
-	private Monitor monitor;
+	private CalibrationEditor monitor;
 	
 	@PostConstruct
 	public void init() throws IOException {

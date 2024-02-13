@@ -8,14 +8,14 @@ import lombok.Data;
 public class CameraSpaceVertex {
 	
 	private String cameraName;
-	private String group; //or type body1, body2, aruco100
+	private String objectName; //or type body1, body2, aruco100
 	private int id;
 	
 	private double x;
 	private double y;
 	
 	public String getUniqueName() {
-		return group + "/" + id;
+		return objectName + "/" + id;
 	}
 	
 }

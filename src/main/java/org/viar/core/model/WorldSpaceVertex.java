@@ -9,7 +9,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class WorldSpaceVertex {
 	
-	private String group; //or type body1, body2, aruco100
+	private String objectName; //or type body1, body2, aruco100
 	private int id;
 	
 	private double x;
