@@ -77,7 +77,7 @@ public class ObjectPositionResolver {
 		final double inch = 0.0254;
 		
 		//return new Point3d((x / w) / inch, (y / w) / inch, (z / w) / inch);
-		return new WorldSpaceVertex(v1.getObject(), v1.getId(), (x / w) / inch, (y / w) / inch, (z / w) / inch);
+		return new WorldSpaceVertex(v1.getObjectName(), v1.getId(), (x / w) / inch, (y / w) / inch, (z / w) / inch);
 	}
 	
 	static void log(String msg) {
