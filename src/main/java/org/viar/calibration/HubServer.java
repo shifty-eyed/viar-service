@@ -1,4 +1,4 @@
-package org.viar.server;
+package org.viar.calibration;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,14 +14,17 @@ import java.util.concurrent.Executors;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.viar.calibration.ui.WorldSpaceCalibration;
 import org.viar.core.ObjectPositionResolver;
 import org.viar.core.model.CameraSpaceFrame;
-import org.viar.calibration.ui.CalibrationEditor;
 
 import com.google.gson.Gson;
 
+
+@Profile("calibration")
 @Component
 public class HubServer{
 	
@@ -34,7 +37,7 @@ public class HubServer{
 	private ObjectPositionResolver objectPositionResolver;
 	
 	@Autowired
-	private CalibrationEditor monitor;
+	private WorldSpaceCalibration monitor;
 	
 	@PostConstruct
 	public void init() throws IOException {
