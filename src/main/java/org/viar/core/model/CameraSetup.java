@@ -97,33 +97,7 @@ public class CameraSetup {
         position = eye;
         modelView = new Matrix4d(rotation, position, 1);
 	}
-	
-	public void initLookAtVecMath(Vector3d eye, Vector3d center, Vector3d up) {
-		
-        Vector3d forward = new Vector3d();
-        forward.sub(center, eye);
-        forward.normalize();
-        log("forward: "+forward);
 
-        Vector3d side = new Vector3d();
-        side.cross(forward, up);
-        side.normalize();
-        log("side: "+side);
-
-        Vector3d upNew = new Vector3d();
-        upNew.cross(side, forward);
-        upNew.normalize();
-        log("upnew: "+upNew);
-
-        Matrix3d rotation = new Matrix3d();
-        rotation.setColumn(0, side);
-        rotation.setColumn(1, upNew);
-        rotation.setColumn(2, forward);
-        
-        direction = forward;
-        position = eye;
-        modelView = new Matrix4d(rotation, position, 1);
-	}
 	
 	public static Mat cvCameraMartix(double f, double cx, double cy) {
 		Mat result = Mat.zeros(3, 3, CvType.CV_64F);

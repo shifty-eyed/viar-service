@@ -1,0 +1,8 @@
+{
+  "serverHost": "localhost",
+  "serverPort": 3000,
+  "cameraNameToId": {
+    "1": 0,
+    "2": 1
+  }
+}

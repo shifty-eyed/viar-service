@@ -128,13 +128,10 @@
 					</execution>
 					<execution>
 						<id>download-sources</id>
+						<phase>generate-sources</phase>
 						<goals>
 							<goal>sources</goal>
-							<goal>resolve</goal>
 						</goals>
-						<configuration>
-							<classifier>javadoc</classifier>
-						</configuration>
 					</execution>
 				</executions>
 			</plugin>
