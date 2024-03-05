@@ -15,11 +15,10 @@ import org.opencv.core.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.viar.core.model.CameraSetup;
-import org.viar.core.model.CameraSpaceArucoMarker;
-import org.viar.core.model.CameraSpaceBodyPose;
-import org.viar.core.model.CameraSpaceFrame;
-import org.viar.core.model.CameraSpaceVertex;
-import org.viar.core.model.WorldSpaceVertex;
+import org.viar.tracker.model.CameraSpaceArucoMarker;
+import org.viar.tracker.model.CameraSpaceBodyPose;
+import org.viar.core.model.CameraSpaceFeature;
+import org.viar.core.model.WorldSpaceFeature;
 
 @Component
 public class ObjectPositionResolver {
@@ -40,14 +39,14 @@ public class ObjectPositionResolver {
 			
 	}
 	
-	private WorldSpaceVertex resolveWorldSpaceVertex(List<CameraSpaceVertex> registerList) {
-		CameraSpaceVertex[] stereoPair = findStereoPair(registerList);
+	private WorldSpaceFeature resolveWorldSpaceVertex(List<CameraSpaceFeature> registerList) {
+		CameraSpaceFeature[] stereoPair = findStereoPair(registerList);
 		if (stereoPair == null) {
 			return null;
 		}
 		
-		CameraSpaceVertex v1 = stereoPair[0];
-		CameraSpaceVertex v2 = stereoPair[1];
+		CameraSpaceFeature v1 = stereoPair[0];
+		CameraSpaceFeature v2 = stereoPair[1];
 		CameraSetup c1 = camerasConfig.get(v1.getCameraName());
 		CameraSetup c2 = camerasConfig.get(v2.getCameraName());
 		
@@ -77,20 +76,20 @@ public class ObjectPositionResolver {
 		final double inch = 0.0254;
 		
 		//return new Point3d((x / w) / inch, (y / w) / inch, (z / w) / inch);
-		return new WorldSpaceVertex(v1.getObjectName(), v1.getId(), (x / w) / inch, (y / w) / inch, (z / w) / inch);
+		return new WorldSpaceFeature(v1.getObjectName(), v1.getId(), (x / w) / inch, (y / w) / inch, (z / w) / inch);
 	}
 	
 	static void log(String msg) {
 		System.out.println(msg);
 	}
 	
-	private CameraSpaceVertex[] findStereoPair(List<CameraSpaceVertex> registerList) {
+	private CameraSpaceFeature[] findStereoPair(List<CameraSpaceFeature> registerList) {
 		double bestDot = 1.0;
-		CameraSpaceVertex[] bestCandidates = new CameraSpaceVertex[2];
+		CameraSpaceFeature[] bestCandidates = new CameraSpaceFeature[2];
 		boolean found = false;
 		
-		for (CameraSpaceVertex v1 : registerList) {
-			for (CameraSpaceVertex v2 : registerList) {
+		for (CameraSpaceFeature v1 : registerList) {
+			for (CameraSpaceFeature v2 : registerList) {
 				if (v1 == v2) {
 					break;
 				}
@@ -112,37 +111,14 @@ public class ObjectPositionResolver {
 		return found ? bestCandidates : null;
 	}
 	
-	private Map<Object, List<CameraSpaceVertex>> groupCameraSpaceVertices(Collection<CameraSpaceFrame> rawData) {
-		Collection<CameraSpaceVertex> result = new ArrayList<>();
-		for (CameraSpaceFrame frame : rawData) {
-			for (CameraSpaceArucoMarker aruco : frame.getArucos()) {
-				//TODO: aruco conversion to markerNode, use single camera aruco offset maybe on previous step
-				// to convert aruco 4 corners and normal vector to single point
-				// which will be not necessary in the middle of aruco marker, rather projection of aruco center to the normal vector
-			}
-			for (CameraSpaceBodyPose body : frame.getBodies()) {
-				int i = 0; 
-				for (Point p : body.getPoints()) {
-					CameraSpaceVertex v = new CameraSpaceVertex();
-					v.setCameraName(frame.getCameraName());
-					v.setObjectName("body" + body.getId());
-					v.setId(i++);
-					v.setX(p.x);
-					v.setY(p.y);
-					result.add(v);
-				}
-				
-			}
-		}
-		return result.stream().collect(Collectors.groupingBy(v -> v.getUniqueName()));
-	}
-	
-	public Collection<WorldSpaceVertex> resolve(Collection<CameraSpaceFrame> rawData) {
-		Collection<WorldSpaceVertex> result = new ArrayList<>();
+	public Collection<WorldSpaceFeature> resolve(Collection<CameraSpaceFeature> rawData) {
+		Collection<WorldSpaceFeature> result = new ArrayList<>();
 		
-		Map<Object, List<CameraSpaceVertex>> cameraSpaceNodes = groupCameraSpaceVertices(rawData);
+		Map<Object, List<CameraSpaceFeature>> groupedByFeatureId =
+				rawData.stream().collect(Collectors.groupingBy(v -> v.getUniqueName()));
 		
-		for (List<CameraSpaceVertex> cameraVertices : cameraSpaceNodes.values()) {
+		for (List<CameraSpaceFeature> cameraVertices : groupedByFeatureId.values()) {
+			// if there is only one camera that sees the feature, we can't resolve its position
 			if (cameraVertices.size() < 2) {
 				continue;
 			}

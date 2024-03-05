@@ -30,7 +30,6 @@ import org.viar.calibration.model.CalibrationSample;
 import org.viar.calibration.model.CameraSamplesSet;
 import org.viar.core.ConvertUtil;
 import org.viar.core.model.CameraSetup;
-import org.viar.core.model.CameraSpaceFrame;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

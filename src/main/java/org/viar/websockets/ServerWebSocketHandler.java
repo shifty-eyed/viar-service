@@ -5,11 +5,8 @@ import java.time.LocalTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-
-import javax.vecmath.Point3d;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +18,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import org.springframework.web.util.HtmlUtils;
 import org.viar.core.TrackingListener;
-import org.viar.core.model.CameraSpaceFrame;
-import org.viar.core.model.WorldSpaceVertex;
+import org.viar.core.model.WorldSpaceFeature;
 
 @Component
 public class ServerWebSocketHandler extends TextWebSocketHandler implements SubProtocolCapable, TrackingListener {
@@ -79,7 +75,7 @@ public class ServerWebSocketHandler extends TextWebSocketHandler implements SubP
     }
 
 	@Override
-	public void trackingUpdated(Collection<CameraSpaceFrame> rawData, Collection<WorldSpaceVertex> resolved, long timeMillis) {
+	public void trackingUpdated(Collection<CameraSpaceFrame> rawData, Collection<WorldSpaceFeature> resolved, long timeMillis) {
 		//Sending to unreal
 		for (WebSocketSession session : sessions) {
             if (session.isOpen() && !resolved.isEmpty()) {

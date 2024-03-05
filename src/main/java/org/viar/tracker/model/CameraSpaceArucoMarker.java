@@ -1,4 +1,4 @@
-package org.viar.core.model;
+package org.viar.tracker.model;
 
 import java.util.List;
 

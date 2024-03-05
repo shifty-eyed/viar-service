@@ -19,7 +19,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.viar.calibration.ui.WorldSpaceCalibration;
 import org.viar.core.ObjectPositionResolver;
-import org.viar.core.model.CameraSpaceFrame;
 
 import com.google.gson.Gson;
 

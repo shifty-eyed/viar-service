@@ -28,9 +28,6 @@ public class CameraRegistry {
 	@Value("file:conf/cameras.json")
 	private Resource camerasFile;
 	
-	@Value("file:conf/nodes.json")
-	private Resource nodesFile;
-	
 	public static MatOfDouble parseMatOfDouble(String key, Map<String, Object> raw) {
 		final List<Double> data = (List<Double>)raw.get(key);
 		if (data == null || data.size() < 3) {
@@ -77,7 +74,6 @@ public class CameraRegistry {
             for (Map.Entry<String, Map<String, Object>> entry : camerasRaw.entrySet()) {
             	Map<String, Object> raw = entry.getValue();
             	
-            	int deviceNumber = ((Double)raw.get("deviceNumber")).intValue();
             	MatOfDouble rvec = parseMatOfDouble("rvec", raw);
             	MatOfDouble tvec = parseMatOfDouble("tvec", raw);
             	MatOfDouble distCoefficients = parseMatOfDouble("distCoefficients", raw);
@@ -87,7 +83,7 @@ public class CameraRegistry {
             	Vector3d up = parseVector3d("up", raw);
             	
             	Mat cameraMatrix = parseCameraMartix("projection", raw);
-            	result.put(entry.getKey(), new CameraSetup(entry.getKey(), deviceNumber, eye, center, up, cameraMatrix, distCoefficients, rvec, tvec));
+            	result.put(entry.getKey(), new CameraSetup(entry.getKey(), eye, center, up, cameraMatrix, distCoefficients, rvec, tvec));
             }
         }
 		return result;

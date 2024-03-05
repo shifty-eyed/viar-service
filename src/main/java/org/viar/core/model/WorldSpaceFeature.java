@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class WorldSpaceVertex {
+public class WorldSpaceFeature {
 	
 	private String objectName; //or type body1, body2, aruco100
 	private int id;

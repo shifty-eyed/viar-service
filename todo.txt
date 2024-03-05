@@ -17,7 +17,10 @@ ms2 - body tracking, narrow distance range, unreal realtime
 
 
 
-
-
 Secchi disk detection, use cv.canny corner detector
 https://stackoverflow.com/questions/55483634/how-to-detect-only-corners-that-has-four-quadrants
+
+
+general interface for both arucos and body parts
+list of feature detectors with same interface:
+

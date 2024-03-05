@@ -4,9 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfInt;
-import org.opencv.core.Point;
 import org.opencv.highgui.HighGui;
-import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.VideoWriter;
 import org.opencv.videoio.Videoio;
@@ -24,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 @Profile("lab")
 @Component
-public class CameraProcessorMonitor implements Runnable {
+public class LabMonitor implements Runnable {
 
     private final Dimension frameSize = new Dimension(1920, 1080);
 

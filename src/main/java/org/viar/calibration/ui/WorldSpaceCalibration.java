@@ -8,8 +8,7 @@ import org.springframework.stereotype.Component;
 import org.viar.calibration.CalibrationDataCollector;
 import org.viar.calibration.WorldCoordinatesPresets;
 import org.viar.core.TrackingListener;
-import org.viar.core.model.CameraSpaceFrame;
-import org.viar.core.model.WorldSpaceVertex;
+import org.viar.core.model.WorldSpaceFeature;
 
 import javax.annotation.PostConstruct;
 import javax.swing.*;
@@ -71,14 +70,14 @@ public class WorldSpaceCalibration implements TrackingListener {
     }
 
     @Override
-    public void trackingUpdated(Collection<CameraSpaceFrame> rawData, Collection<WorldSpaceVertex> resolved, long timeMillis) {
+    public void trackingUpdated(Collection<CameraSpaceFrame> rawData, Collection<WorldSpaceFeature> resolved, long timeMillis) {
         SwingUtilities.invokeLater(() -> {
             cameraSpaceSamples = rawData;
 
             StringBuilder sb = new StringBuilder();
             if (resolved != null) {
                 sb.append("\n\n");
-                for (WorldSpaceVertex k : resolved) {
+                for (WorldSpaceFeature k : resolved) {
                     sb.append(String.format("%s - %.3f, %.3f, %.3f\n", k.getId(), k.getX(), k.getY(), k.getZ()));
                 }
             }
