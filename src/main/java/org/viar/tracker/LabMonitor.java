@@ -4,18 +4,28 @@ import lombok.Getter;
 import lombok.Setter;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfInt;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
 import org.opencv.highgui.HighGui;
+import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.VideoWriter;
 import org.opencv.videoio.Videoio;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import org.viar.core.CameraRegistry;
+import org.viar.core.model.CameraSetup;
+import org.viar.core.model.CameraSpaceFeature;
+import org.viar.tracker.detection.ArucoDetectorWrapper;
 import org.viar.tracker.ui.DetectionAndTrackingLab;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.swing.*;
 import java.awt.*;
+import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -37,6 +47,11 @@ public class LabMonitor implements Runnable {
     private VideoCapture capture;
     private Mat frameSrc;
     private Mat frameMarkup;
+
+    private ArucoDetectorWrapper arucoDetector = new ArucoDetectorWrapper();
+
+    @Autowired
+    private Map<String, CameraSetup> camerasConfig;
 
 
     @PostConstruct
@@ -115,9 +130,17 @@ public class LabMonitor implements Runnable {
     }
 
     private void processFrame(Mat frameSrc, Mat frameMarkup) {
+        var arucos = arucoDetector.detect(frameSrc, camerasConfig.get("1"));
 
+        drawFeatures(frameMarkup, arucos);
+    }
 
-
+    private void drawFeatures(Mat frame, Collection<CameraSpaceFeature> features) {
+        final var color = new Scalar(0, 200, 0);
+        for (var feature : features) {
+            var position = new Point(feature.getX(), feature.getY());
+            Imgproc.circle(frame, position, 10, color, 2);
+        }
     }
 
     @PreDestroy

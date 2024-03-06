@@ -18,6 +18,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import org.springframework.web.util.HtmlUtils;
 import org.viar.core.TrackingListener;
+import org.viar.core.model.CameraSpaceFeature;
 import org.viar.core.model.WorldSpaceFeature;
 
 @Component
@@ -75,7 +76,7 @@ public class ServerWebSocketHandler extends TextWebSocketHandler implements SubP
     }
 
 	@Override
-	public void trackingUpdated(Collection<CameraSpaceFrame> rawData, Collection<WorldSpaceFeature> resolved, long timeMillis) {
+	public void trackingUpdated(Collection<CameraSpaceFeature> rawData, Collection<WorldSpaceFeature> resolved, long timeMillis) {
 		//Sending to unreal
 		for (WebSocketSession session : sessions) {
             if (session.isOpen() && !resolved.isEmpty()) {

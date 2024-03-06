@@ -21,6 +21,7 @@ import org.viar.calibration.ui.WorldSpaceCalibration;
 import org.viar.core.ObjectPositionResolver;
 
 import com.google.gson.Gson;
+import org.viar.core.model.CameraSpaceFeature;
 
 
 @Profile("calibration")
@@ -83,7 +84,7 @@ public class HubServer{
 			try {
 				BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				PrintWriter out = new PrintWriter(socket.getOutputStream());
-				List<CameraSpaceFrame> frame = new ArrayList<>();
+				List<CameraSpaceFeature> frame = new ArrayList<>();
 
 				clientLoop: while (true) {
 					if (monitor.isShutdownTrackers()) {
@@ -111,7 +112,7 @@ public class HubServer{
 						if ("end".equals(text)) {
 							break;
 						}
-						frame.add(gson.fromJson(text, CameraSpaceFrame.class));
+						frame.add(gson.fromJson(text, CameraSpaceFeature.class));
 					};
 					
 					monitor.show(StringUtils.collectionToCommaDelimitedString(frame));

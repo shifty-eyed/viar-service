@@ -57,7 +57,7 @@ public class CameraSetup {
 		System.out.println(s);
 	}
 
-	private @Getter String id;
+	private @Getter String name;
 	private @Getter Matrix4d modelView;
 	private @Getter Vector3d direction;
 	private @Getter Vector3d position;
@@ -65,15 +65,15 @@ public class CameraSetup {
 	private @Getter Extrinsic extrinsic;
 	private @Getter Mat projectionMatrix;
 	
-	public CameraSetup(String id, Vector3d eye, Vector3d center, Vector3d up, Mat cameraMatrix, MatOfDouble distCoefficients, MatOfDouble rvec, MatOfDouble tvec) {
-		this.id = id;
+	public CameraSetup(String name, Vector3d eye, Vector3d center, Vector3d up, Mat cameraMatrix, MatOfDouble distCoefficients, MatOfDouble rvec, MatOfDouble tvec) {
+		this.name = name;
 		initLookAt(eye, center, up);
 		intrinsic = new Intrinsic(cameraMatrix, distCoefficients);
 		extrinsic = new Extrinsic(rvec, tvec);
 		
 		projectionMatrix = new Mat();
 		Core.gemm(cameraMatrix, extrinsic.getExtrinsicMatrix(), 1.0, new Mat(), 0.0, projectionMatrix);
-		log("projection #"+id+"\n"+ConvertUtil.stringOfMat(projectionMatrix));
+		log("projection #"+ name +"\n"+ConvertUtil.stringOfMat(projectionMatrix));
 	}
 	
 	
