@@ -10,6 +10,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.SubProtocolCapable;
@@ -21,6 +22,7 @@ import org.viar.core.TrackingListener;
 import org.viar.core.model.CameraSpaceFeature;
 import org.viar.core.model.WorldSpaceFeature;
 
+@Profile("server")
 @Component
 public class ServerWebSocketHandler extends TextWebSocketHandler implements SubProtocolCapable, TrackingListener {
     

@@ -10,10 +10,11 @@ DONE - milestone1 - track one node and pass to unreal realtime
 
 ms2 - body tracking, narrow distance range, unreal realtime
 1. better position cameras
-2. re-calibrate using new device
+2. make better calibration device, re-calibrate using new device
 3. detect body parts with ai lib - ok
-4. improve message communication with unreal
-5. unreal- control actor with skeleton
+5. track body parts with tracking algs
+6. improve message communication with unreal
+7. unreal- control actor with skeleton
 
 
 
@@ -21,6 +22,12 @@ Secchi disk detection, use cv.canny corner detector
 https://stackoverflow.com/questions/55483634/how-to-detect-only-corners-that-has-four-quadrants
 
 
-general interface for both arucos and body parts
-list of feature detectors with same interface:
+- feature coordinates normalized to 0-1 with center in the middle
+- aruco improvements:
+    - use projected points
+    - if >1 detected use mean
+    - if close to center round to zero (0,0,0)
+    - add world-space-offset configuaration for every aruco marker
+
+
 

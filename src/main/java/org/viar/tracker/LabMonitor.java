@@ -13,6 +13,7 @@ import org.opencv.videoio.VideoWriter;
 import org.opencv.videoio.Videoio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
+import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import org.springframework.stereotype.Component;
 import org.viar.core.CameraRegistry;
 import org.viar.core.model.CameraSetup;
@@ -55,7 +56,7 @@ public class LabMonitor implements Runnable {
 
 
     @PostConstruct
-    private void init() {
+    private void init() throws InterruptedException {
 
         capture = new VideoCapture(0, Videoio.CAP_V4L2, new MatOfInt(
                 Videoio.CAP_PROP_FOURCC, VideoWriter.fourcc('M', 'J', 'P', 'G'),
@@ -75,21 +76,20 @@ public class LabMonitor implements Runnable {
         window.setVisible(true);
 
         labUI.btnExit.addActionListener(e -> {
-            running = false;
-            pool.shutdown();
             try {
-                pool.awaitTermination(200, TimeUnit.MILLISECONDS);
+                shutdown();
             } catch (InterruptedException ex) {
                 throw new RuntimeException(ex);
+            } finally {
+                System.exit(0);
             }
-            window.dispose();
-            System.exit(0);
         });
 
         //check if the camera is opened and able to capture frames
         if (!capture.isOpened()) {
             System.out.println("Error - cannot open camera");
-            JOptionPane.showMessageDialog(null, "Cannot open camera", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(window, "Cannot open camera", "Error", JOptionPane.ERROR_MESSAGE);
+            shutdown();
             System.exit(1);
         } else {
             capture.read(frameSrc);
@@ -98,7 +98,8 @@ public class LabMonitor implements Runnable {
                 pool.execute(this);
             } else {
                 System.out.println("Error - cannot capture requested frame size");
-                JOptionPane.showMessageDialog(null, "Cannot capture requested frame size", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(window, "Cannot capture requested frame size", "Error", JOptionPane.ERROR_MESSAGE);
+                shutdown();
                 System.exit(1);
             }
         }
@@ -130,22 +131,29 @@ public class LabMonitor implements Runnable {
     }
 
     private void processFrame(Mat frameSrc, Mat frameMarkup) {
-        var arucos = arucoDetector.detect(frameSrc, camerasConfig.get("1"));
+        var arucos = arucoDetector.detect(frameSrc, camerasConfig.get("2"));
 
         drawFeatures(frameMarkup, arucos);
     }
 
     private void drawFeatures(Mat frame, Collection<CameraSpaceFeature> features) {
-        final var color = new Scalar(0, 200, 0);
+        arucoDetector.drawMarkers(frame, camerasConfig.get("2"));
+
+        /*final var color = new Scalar(0, 200, 0);
         for (var feature : features) {
             var position = new Point(feature.getX(), feature.getY());
             Imgproc.circle(frame, position, 10, color, 2);
-        }
+        }*/
     }
 
     @PreDestroy
     private void shutdown() throws InterruptedException {
+        running = false;
+        if (pool != null) {
+            pool.shutdownNow();
+            pool.awaitTermination(1, TimeUnit.SECONDS);
+        }
+        window.dispose();
         capture.release();
-        pool.shutdown();
     }
 }

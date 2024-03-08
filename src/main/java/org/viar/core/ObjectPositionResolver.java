@@ -15,8 +15,6 @@ import org.opencv.core.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.viar.core.model.CameraSetup;
-import org.viar.tracker.model.CameraSpaceArucoMarker;
-import org.viar.tracker.model.CameraSpaceBodyPose;
 import org.viar.core.model.CameraSpaceFeature;
 import org.viar.core.model.WorldSpaceFeature;
 
