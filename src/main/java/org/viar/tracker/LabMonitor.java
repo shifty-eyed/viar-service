@@ -19,6 +19,7 @@ import org.viar.core.CameraRegistry;
 import org.viar.core.model.CameraSetup;
 import org.viar.core.model.CameraSpaceFeature;
 import org.viar.tracker.detection.ArucoDetectorWrapper;
+import org.viar.tracker.model.MakerFeaturePointOffset;
 import org.viar.tracker.ui.DetectionAndTrackingLab;
 
 import javax.annotation.PostConstruct;
@@ -49,14 +50,17 @@ public class LabMonitor implements Runnable {
     private Mat frameSrc;
     private Mat frameMarkup;
 
-    private ArucoDetectorWrapper arucoDetector = new ArucoDetectorWrapper();
+    private ArucoDetectorWrapper arucoDetector;
 
     @Autowired
     private Map<String, CameraSetup> camerasConfig;
 
+    @Autowired
+    private Map<Integer, MakerFeaturePointOffset> markerFeaturePointOffsets;
 
     @PostConstruct
     private void init() throws InterruptedException {
+        arucoDetector = new ArucoDetectorWrapper(0.065, markerFeaturePointOffsets);
 
         capture = new VideoCapture(0, Videoio.CAP_V4L2, new MatOfInt(
                 Videoio.CAP_PROP_FOURCC, VideoWriter.fourcc('M', 'J', 'P', 'G'),
@@ -76,13 +80,16 @@ public class LabMonitor implements Runnable {
         window.setVisible(true);
 
         labUI.btnExit.addActionListener(e -> {
-            try {
-                shutdown();
-            } catch (InterruptedException ex) {
-                throw new RuntimeException(ex);
-            } finally {
-                System.exit(0);
-            }
+            SwingUtilities.invokeLater(() -> {
+                try {
+                    shutdown();
+                } catch (InterruptedException ex) {
+                    throw new RuntimeException(ex);
+                } finally {
+                    System.exit(0);
+                }
+            });
+
         });
 
         //check if the camera is opened and able to capture frames
@@ -139,11 +146,13 @@ public class LabMonitor implements Runnable {
     private void drawFeatures(Mat frame, Collection<CameraSpaceFeature> features) {
         arucoDetector.drawMarkers(frame, camerasConfig.get("2"));
 
-        /*final var color = new Scalar(0, 200, 0);
+        final var color = new Scalar(0, 200, 0);
+        final var yellow = new Scalar(0, 200, 200);
         for (var feature : features) {
             var position = new Point(feature.getX(), feature.getY());
-            Imgproc.circle(frame, position, 10, color, 2);
-        }*/
+            Imgproc.circle(frame, position, 5, color, 2);
+            Imgproc.putText(frame, String.valueOf(feature.getId()), position, Imgproc.FONT_HERSHEY_SIMPLEX, 1.5, yellow, 2);
+        }
     }
 
     @PreDestroy
