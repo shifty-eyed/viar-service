@@ -19,6 +19,7 @@ import org.viar.core.CameraRegistry;
 import org.viar.core.model.CameraSetup;
 import org.viar.core.model.CameraSpaceFeature;
 import org.viar.tracker.detection.ArucoDetectorWrapper;
+import org.viar.tracker.detection.BodyPoseDetector;
 import org.viar.tracker.model.MakerFeaturePointOffset;
 import org.viar.tracker.ui.DetectionAndTrackingLab;
 
@@ -51,6 +52,7 @@ public class LabMonitor implements Runnable {
     private Mat frameMarkup;
 
     private ArucoDetectorWrapper arucoDetector;
+    private BodyPoseDetector bodyPoseDetector;
 
     @Autowired
     private Map<String, CameraSetup> camerasConfig;
@@ -61,6 +63,7 @@ public class LabMonitor implements Runnable {
     @PostConstruct
     private void init() throws InterruptedException {
         arucoDetector = new ArucoDetectorWrapper(0.065, markerFeaturePointOffsets);
+        bodyPoseDetector = new BodyPoseDetector();
 
         capture = new VideoCapture(0, Videoio.CAP_V4L2, new MatOfInt(
                 Videoio.CAP_PROP_FOURCC, VideoWriter.fourcc('M', 'J', 'P', 'G'),
@@ -86,7 +89,9 @@ public class LabMonitor implements Runnable {
                 } catch (InterruptedException ex) {
                     throw new RuntimeException(ex);
                 } finally {
+                    System.out.println("System.exit(0) - start");
                     System.exit(0);
+                    System.out.println("System.exit(0) - done");
                 }
             });
 
@@ -133,18 +138,21 @@ public class LabMonitor implements Runnable {
                 startTime = System.currentTimeMillis();
             }
         }
-
+        System.out.println("Shutting down");
         capture.release();
+        System.out.println("Capture released");
     }
 
     private void processFrame(Mat frameSrc, Mat frameMarkup) {
-        var arucos = arucoDetector.detect(frameSrc, camerasConfig.get("2"));
+        //var arucos = arucoDetector.detect(frameSrc, camerasConfig.get("2"));
+        var bodyParts = bodyPoseDetector.detect(frameSrc, camerasConfig.get("2"));
 
-        drawFeatures(frameMarkup, arucos);
+        drawFeatures(frameMarkup, bodyParts);
     }
 
     private void drawFeatures(Mat frame, Collection<CameraSpaceFeature> features) {
-        arucoDetector.drawMarkers(frame, camerasConfig.get("2"));
+        //arucoDetector.drawMarkers(frame, camerasConfig.get("2"));
+        //bodyPoseDetector.drawHeatMaps(frame, 18);
 
         final var color = new Scalar(0, 200, 0);
         final var yellow = new Scalar(0, 200, 200);
@@ -159,10 +167,10 @@ public class LabMonitor implements Runnable {
     private void shutdown() throws InterruptedException {
         running = false;
         if (pool != null) {
-            pool.shutdownNow();
+            pool.shutdown();
             pool.awaitTermination(1, TimeUnit.SECONDS);
         }
-        window.dispose();
-        capture.release();
+        //window.dispose();
+        System.out.println("window.dispose");
     }
 }

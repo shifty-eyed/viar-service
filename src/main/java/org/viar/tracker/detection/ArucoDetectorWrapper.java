@@ -77,11 +77,11 @@ public class ArucoDetectorWrapper implements FeatureDetector {
 
             var featureCenterProjected = new Point(outFeaturePoint.get(0, 0)[0], outFeaturePoint.get(0, 0)[1]);
 
-            var featureCenter = smoothJitter(featureCenterProjected, imagePoints);
+            var featureCenterNormalized = smoothJitter(featureCenterProjected, imagePoints);
 
             var feature = new CameraSpaceFeature();
-            feature.setX(featureCenter.x);
-            feature.setY(featureCenter.y);
+            feature.setX(featureCenterNormalized.x);
+            feature.setY(featureCenterNormalized.y);
             feature.setId(featurePointConfig.getMarkerId());
             feature.setCameraName(cameraSetup.getName());
             feature.setObjectName("Aruco");

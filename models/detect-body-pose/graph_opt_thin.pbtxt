@@ -1,0 +1,7218 @@
+node {
+  name: "image"
+  op: "Placeholder"
+  attr {
+    key: "dtype"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "shape"
+    value {
+      shape {
+        dim {
+          size: -1
+        }
+        dim {
+          size: -1
+        }
+        dim {
+          size: -1
+        }
+        dim {
+          size: 3
+        }
+      }
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_0/Conv2D"
+  op: "Conv2D"
+  input: "image"
+  input: "MobilenetV1/Conv2d_0/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 2
+        i: 2
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_0/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "MobilenetV1/Conv2d_0/Conv2D"
+  input: "MobilenetV1/Conv2d_0/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_0/Relu"
+  op: "Relu"
+  input: "MobilenetV1/Conv2d_0/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_1_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "MobilenetV1/Conv2d_0/Relu"
+  input: "MobilenetV1/Conv2d_1_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_1_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "MobilenetV1/Conv2d_1_depthwise/depthwise"
+  input: "MobilenetV1/Conv2d_1_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_1_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "MobilenetV1/Conv2d_1_pointwise/Conv2D"
+  input: "MobilenetV1/Conv2d_1_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_1_pointwise/Relu"
+  op: "Relu"
+  input: "MobilenetV1/Conv2d_1_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_2_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "MobilenetV1/Conv2d_1_pointwise/Relu"
+  input: "MobilenetV1/Conv2d_2_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 2
+        i: 2
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_2_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "MobilenetV1/Conv2d_2_depthwise/depthwise"
+  input: "MobilenetV1/Conv2d_2_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_2_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "MobilenetV1/Conv2d_2_pointwise/Conv2D"
+  input: "MobilenetV1/Conv2d_2_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_2_pointwise/Relu"
+  op: "Relu"
+  input: "MobilenetV1/Conv2d_2_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_3_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "MobilenetV1/Conv2d_2_pointwise/Relu"
+  input: "MobilenetV1/Conv2d_3_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_3_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "MobilenetV1/Conv2d_3_depthwise/depthwise"
+  input: "MobilenetV1/Conv2d_3_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_3_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "MobilenetV1/Conv2d_3_pointwise/Conv2D"
+  input: "MobilenetV1/Conv2d_3_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_3_pointwise/Relu"
+  op: "Relu"
+  input: "MobilenetV1/Conv2d_3_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_4_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "MobilenetV1/Conv2d_3_pointwise/Relu"
+  input: "MobilenetV1/Conv2d_4_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 2
+        i: 2
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_4_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "MobilenetV1/Conv2d_4_depthwise/depthwise"
+  input: "MobilenetV1/Conv2d_4_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_4_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "MobilenetV1/Conv2d_4_pointwise/Conv2D"
+  input: "MobilenetV1/Conv2d_4_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_4_pointwise/Relu"
+  op: "Relu"
+  input: "MobilenetV1/Conv2d_4_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_5_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "MobilenetV1/Conv2d_4_pointwise/Relu"
+  input: "MobilenetV1/Conv2d_5_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_5_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "MobilenetV1/Conv2d_5_depthwise/depthwise"
+  input: "MobilenetV1/Conv2d_5_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_5_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "MobilenetV1/Conv2d_5_pointwise/Conv2D"
+  input: "MobilenetV1/Conv2d_5_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_5_pointwise/Relu"
+  op: "Relu"
+  input: "MobilenetV1/Conv2d_5_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_6_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "MobilenetV1/Conv2d_5_pointwise/Relu"
+  input: "MobilenetV1/Conv2d_6_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_6_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "MobilenetV1/Conv2d_6_depthwise/depthwise"
+  input: "MobilenetV1/Conv2d_6_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_6_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "MobilenetV1/Conv2d_6_pointwise/Conv2D"
+  input: "MobilenetV1/Conv2d_6_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_6_pointwise/Relu"
+  op: "Relu"
+  input: "MobilenetV1/Conv2d_6_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_7_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "MobilenetV1/Conv2d_6_pointwise/Relu"
+  input: "MobilenetV1/Conv2d_7_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_7_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "MobilenetV1/Conv2d_7_depthwise/depthwise"
+  input: "MobilenetV1/Conv2d_7_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_7_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "MobilenetV1/Conv2d_7_pointwise/Conv2D"
+  input: "MobilenetV1/Conv2d_7_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_7_pointwise/Relu"
+  op: "Relu"
+  input: "MobilenetV1/Conv2d_7_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_8_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "MobilenetV1/Conv2d_7_pointwise/Relu"
+  input: "MobilenetV1/Conv2d_8_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_8_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "MobilenetV1/Conv2d_8_depthwise/depthwise"
+  input: "MobilenetV1/Conv2d_8_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_8_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "MobilenetV1/Conv2d_8_pointwise/Conv2D"
+  input: "MobilenetV1/Conv2d_8_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_8_pointwise/Relu"
+  op: "Relu"
+  input: "MobilenetV1/Conv2d_8_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_9_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "MobilenetV1/Conv2d_8_pointwise/Relu"
+  input: "MobilenetV1/Conv2d_9_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_9_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "MobilenetV1/Conv2d_9_depthwise/depthwise"
+  input: "MobilenetV1/Conv2d_9_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_9_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "MobilenetV1/Conv2d_9_pointwise/Conv2D"
+  input: "MobilenetV1/Conv2d_9_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_9_pointwise/Relu"
+  op: "Relu"
+  input: "MobilenetV1/Conv2d_9_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_10_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "MobilenetV1/Conv2d_9_pointwise/Relu"
+  input: "MobilenetV1/Conv2d_10_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_10_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "MobilenetV1/Conv2d_10_depthwise/depthwise"
+  input: "MobilenetV1/Conv2d_10_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_10_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "MobilenetV1/Conv2d_10_pointwise/Conv2D"
+  input: "MobilenetV1/Conv2d_10_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_10_pointwise/Relu"
+  op: "Relu"
+  input: "MobilenetV1/Conv2d_10_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_11_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "MobilenetV1/Conv2d_10_pointwise/Relu"
+  input: "MobilenetV1/Conv2d_11_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_11_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "MobilenetV1/Conv2d_11_depthwise/depthwise"
+  input: "MobilenetV1/Conv2d_11_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_11_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "MobilenetV1/Conv2d_11_pointwise/Conv2D"
+  input: "MobilenetV1/Conv2d_11_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "MobilenetV1/Conv2d_11_pointwise/Relu"
+  op: "Relu"
+  input: "MobilenetV1/Conv2d_11_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Conv2d_3_pool"
+  op: "MaxPool"
+  input: "MobilenetV1/Conv2d_3_pointwise/Relu"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "ksize"
+    value {
+      list {
+        i: 1
+        i: 2
+        i: 2
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 2
+        i: 2
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "feat_concat"
+  op: "ConcatV2"
+  input: "Conv2d_3_pool"
+  input: "MobilenetV1/Conv2d_7_pointwise/Relu"
+  input: "MobilenetV1/Conv2d_11_pointwise/Relu"
+  input: "feat_concat/axis"
+  attr {
+    key: "N"
+    value {
+      i: 3
+    }
+  }
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "Tidx"
+    value {
+      type: DT_INT32
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L1_1_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "feat_concat"
+  input: "Openpose/MConv_Stage1_L1_1_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L1_1_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage1_L1_1_depthwise/depthwise"
+  input: "Openpose/MConv_Stage1_L1_1_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L1_1_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage1_L1_1_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage1_L1_1_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L1_1_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage1_L1_1_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L1_2_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage1_L1_1_pointwise/Relu"
+  input: "Openpose/MConv_Stage1_L1_2_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L1_2_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage1_L1_2_depthwise/depthwise"
+  input: "Openpose/MConv_Stage1_L1_2_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L1_2_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage1_L1_2_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage1_L1_2_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L1_2_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage1_L1_2_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L1_3_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage1_L1_2_pointwise/Relu"
+  input: "Openpose/MConv_Stage1_L1_3_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L1_3_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage1_L1_3_depthwise/depthwise"
+  input: "Openpose/MConv_Stage1_L1_3_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L1_3_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage1_L1_3_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage1_L1_3_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L1_3_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage1_L1_3_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L1_4_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage1_L1_3_pointwise/Relu"
+  input: "Openpose/MConv_Stage1_L1_4_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L1_4_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage1_L1_4_depthwise/depthwise"
+  input: "Openpose/MConv_Stage1_L1_4_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L1_4_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage1_L1_4_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage1_L1_4_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L1_4_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage1_L1_4_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L1_5_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage1_L1_4_pointwise/Relu"
+  input: "Openpose/MConv_Stage1_L1_5_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L1_5_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage1_L1_5_depthwise/depthwise"
+  input: "Openpose/MConv_Stage1_L1_5_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L1_5_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage1_L1_5_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage1_L1_5_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L2_1_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "feat_concat"
+  input: "Openpose/MConv_Stage1_L2_1_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L2_1_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage1_L2_1_depthwise/depthwise"
+  input: "Openpose/MConv_Stage1_L2_1_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L2_1_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage1_L2_1_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage1_L2_1_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L2_1_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage1_L2_1_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L2_2_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage1_L2_1_pointwise/Relu"
+  input: "Openpose/MConv_Stage1_L2_2_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L2_2_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage1_L2_2_depthwise/depthwise"
+  input: "Openpose/MConv_Stage1_L2_2_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L2_2_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage1_L2_2_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage1_L2_2_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L2_2_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage1_L2_2_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L2_3_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage1_L2_2_pointwise/Relu"
+  input: "Openpose/MConv_Stage1_L2_3_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L2_3_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage1_L2_3_depthwise/depthwise"
+  input: "Openpose/MConv_Stage1_L2_3_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L2_3_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage1_L2_3_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage1_L2_3_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L2_3_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage1_L2_3_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L2_4_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage1_L2_3_pointwise/Relu"
+  input: "Openpose/MConv_Stage1_L2_4_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L2_4_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage1_L2_4_depthwise/depthwise"
+  input: "Openpose/MConv_Stage1_L2_4_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L2_4_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage1_L2_4_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage1_L2_4_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L2_4_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage1_L2_4_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L2_5_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage1_L2_4_pointwise/Relu"
+  input: "Openpose/MConv_Stage1_L2_5_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L2_5_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage1_L2_5_depthwise/depthwise"
+  input: "Openpose/MConv_Stage1_L2_5_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage1_L2_5_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage1_L2_5_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage1_L2_5_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_concat"
+  op: "ConcatV2"
+  input: "Openpose/MConv_Stage1_L1_5_pointwise/BatchNorm/FusedBatchNorm"
+  input: "Openpose/MConv_Stage1_L2_5_pointwise/BatchNorm/FusedBatchNorm"
+  input: "feat_concat"
+  input: "Openpose/MConv_Stage2_concat/axis"
+  attr {
+    key: "N"
+    value {
+      i: 3
+    }
+  }
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "Tidx"
+    value {
+      type: DT_INT32
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L1_1_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage2_concat"
+  input: "Openpose/MConv_Stage2_L1_1_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L1_1_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage2_L1_1_depthwise/depthwise"
+  input: "Openpose/MConv_Stage2_L1_1_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L1_1_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage2_L1_1_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage2_L1_1_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L1_1_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage2_L1_1_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L1_2_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage2_L1_1_pointwise/Relu"
+  input: "Openpose/MConv_Stage2_L1_2_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L1_2_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage2_L1_2_depthwise/depthwise"
+  input: "Openpose/MConv_Stage2_L1_2_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L1_2_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage2_L1_2_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage2_L1_2_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L1_2_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage2_L1_2_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L1_3_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage2_L1_2_pointwise/Relu"
+  input: "Openpose/MConv_Stage2_L1_3_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L1_3_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage2_L1_3_depthwise/depthwise"
+  input: "Openpose/MConv_Stage2_L1_3_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L1_3_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage2_L1_3_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage2_L1_3_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L1_3_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage2_L1_3_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L1_4_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage2_L1_3_pointwise/Relu"
+  input: "Openpose/MConv_Stage2_L1_4_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L1_4_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage2_L1_4_depthwise/depthwise"
+  input: "Openpose/MConv_Stage2_L1_4_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L1_4_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage2_L1_4_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage2_L1_4_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L1_4_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage2_L1_4_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L1_5_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage2_L1_4_pointwise/Relu"
+  input: "Openpose/MConv_Stage2_L1_5_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L1_5_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage2_L1_5_depthwise/depthwise"
+  input: "Openpose/MConv_Stage2_L1_5_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L1_5_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage2_L1_5_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage2_L1_5_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L2_1_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage2_concat"
+  input: "Openpose/MConv_Stage2_L2_1_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L2_1_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage2_L2_1_depthwise/depthwise"
+  input: "Openpose/MConv_Stage2_L2_1_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L2_1_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage2_L2_1_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage2_L2_1_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L2_1_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage2_L2_1_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L2_2_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage2_L2_1_pointwise/Relu"
+  input: "Openpose/MConv_Stage2_L2_2_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L2_2_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage2_L2_2_depthwise/depthwise"
+  input: "Openpose/MConv_Stage2_L2_2_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L2_2_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage2_L2_2_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage2_L2_2_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L2_2_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage2_L2_2_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L2_3_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage2_L2_2_pointwise/Relu"
+  input: "Openpose/MConv_Stage2_L2_3_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L2_3_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage2_L2_3_depthwise/depthwise"
+  input: "Openpose/MConv_Stage2_L2_3_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L2_3_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage2_L2_3_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage2_L2_3_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L2_3_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage2_L2_3_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L2_4_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage2_L2_3_pointwise/Relu"
+  input: "Openpose/MConv_Stage2_L2_4_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L2_4_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage2_L2_4_depthwise/depthwise"
+  input: "Openpose/MConv_Stage2_L2_4_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L2_4_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage2_L2_4_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage2_L2_4_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L2_4_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage2_L2_4_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L2_5_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage2_L2_4_pointwise/Relu"
+  input: "Openpose/MConv_Stage2_L2_5_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L2_5_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage2_L2_5_depthwise/depthwise"
+  input: "Openpose/MConv_Stage2_L2_5_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage2_L2_5_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage2_L2_5_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage2_L2_5_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_concat"
+  op: "ConcatV2"
+  input: "Openpose/MConv_Stage2_L1_5_pointwise/BatchNorm/FusedBatchNorm"
+  input: "Openpose/MConv_Stage2_L2_5_pointwise/BatchNorm/FusedBatchNorm"
+  input: "feat_concat"
+  input: "Openpose/MConv_Stage3_concat/axis"
+  attr {
+    key: "N"
+    value {
+      i: 3
+    }
+  }
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "Tidx"
+    value {
+      type: DT_INT32
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L1_1_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage3_concat"
+  input: "Openpose/MConv_Stage3_L1_1_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L1_1_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage3_L1_1_depthwise/depthwise"
+  input: "Openpose/MConv_Stage3_L1_1_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L1_1_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage3_L1_1_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage3_L1_1_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L1_1_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage3_L1_1_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L1_2_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage3_L1_1_pointwise/Relu"
+  input: "Openpose/MConv_Stage3_L1_2_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L1_2_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage3_L1_2_depthwise/depthwise"
+  input: "Openpose/MConv_Stage3_L1_2_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L1_2_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage3_L1_2_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage3_L1_2_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L1_2_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage3_L1_2_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L1_3_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage3_L1_2_pointwise/Relu"
+  input: "Openpose/MConv_Stage3_L1_3_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L1_3_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage3_L1_3_depthwise/depthwise"
+  input: "Openpose/MConv_Stage3_L1_3_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L1_3_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage3_L1_3_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage3_L1_3_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L1_3_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage3_L1_3_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L1_4_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage3_L1_3_pointwise/Relu"
+  input: "Openpose/MConv_Stage3_L1_4_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L1_4_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage3_L1_4_depthwise/depthwise"
+  input: "Openpose/MConv_Stage3_L1_4_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L1_4_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage3_L1_4_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage3_L1_4_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L1_4_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage3_L1_4_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L1_5_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage3_L1_4_pointwise/Relu"
+  input: "Openpose/MConv_Stage3_L1_5_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L1_5_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage3_L1_5_depthwise/depthwise"
+  input: "Openpose/MConv_Stage3_L1_5_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L1_5_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage3_L1_5_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage3_L1_5_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L2_1_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage3_concat"
+  input: "Openpose/MConv_Stage3_L2_1_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L2_1_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage3_L2_1_depthwise/depthwise"
+  input: "Openpose/MConv_Stage3_L2_1_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L2_1_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage3_L2_1_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage3_L2_1_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L2_1_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage3_L2_1_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L2_2_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage3_L2_1_pointwise/Relu"
+  input: "Openpose/MConv_Stage3_L2_2_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L2_2_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage3_L2_2_depthwise/depthwise"
+  input: "Openpose/MConv_Stage3_L2_2_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L2_2_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage3_L2_2_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage3_L2_2_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L2_2_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage3_L2_2_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L2_3_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage3_L2_2_pointwise/Relu"
+  input: "Openpose/MConv_Stage3_L2_3_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L2_3_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage3_L2_3_depthwise/depthwise"
+  input: "Openpose/MConv_Stage3_L2_3_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L2_3_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage3_L2_3_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage3_L2_3_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L2_3_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage3_L2_3_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L2_4_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage3_L2_3_pointwise/Relu"
+  input: "Openpose/MConv_Stage3_L2_4_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L2_4_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage3_L2_4_depthwise/depthwise"
+  input: "Openpose/MConv_Stage3_L2_4_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L2_4_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage3_L2_4_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage3_L2_4_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L2_4_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage3_L2_4_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L2_5_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage3_L2_4_pointwise/Relu"
+  input: "Openpose/MConv_Stage3_L2_5_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L2_5_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage3_L2_5_depthwise/depthwise"
+  input: "Openpose/MConv_Stage3_L2_5_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage3_L2_5_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage3_L2_5_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage3_L2_5_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_concat"
+  op: "ConcatV2"
+  input: "Openpose/MConv_Stage3_L1_5_pointwise/BatchNorm/FusedBatchNorm"
+  input: "Openpose/MConv_Stage3_L2_5_pointwise/BatchNorm/FusedBatchNorm"
+  input: "feat_concat"
+  input: "Openpose/MConv_Stage4_concat/axis"
+  attr {
+    key: "N"
+    value {
+      i: 3
+    }
+  }
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "Tidx"
+    value {
+      type: DT_INT32
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L1_1_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage4_concat"
+  input: "Openpose/MConv_Stage4_L1_1_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L1_1_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage4_L1_1_depthwise/depthwise"
+  input: "Openpose/MConv_Stage4_L1_1_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L1_1_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage4_L1_1_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage4_L1_1_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L1_1_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage4_L1_1_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L1_2_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage4_L1_1_pointwise/Relu"
+  input: "Openpose/MConv_Stage4_L1_2_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L1_2_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage4_L1_2_depthwise/depthwise"
+  input: "Openpose/MConv_Stage4_L1_2_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L1_2_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage4_L1_2_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage4_L1_2_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L1_2_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage4_L1_2_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L1_3_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage4_L1_2_pointwise/Relu"
+  input: "Openpose/MConv_Stage4_L1_3_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L1_3_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage4_L1_3_depthwise/depthwise"
+  input: "Openpose/MConv_Stage4_L1_3_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L1_3_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage4_L1_3_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage4_L1_3_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L1_3_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage4_L1_3_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L1_4_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage4_L1_3_pointwise/Relu"
+  input: "Openpose/MConv_Stage4_L1_4_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L1_4_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage4_L1_4_depthwise/depthwise"
+  input: "Openpose/MConv_Stage4_L1_4_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L1_4_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage4_L1_4_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage4_L1_4_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L1_4_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage4_L1_4_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L1_5_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage4_L1_4_pointwise/Relu"
+  input: "Openpose/MConv_Stage4_L1_5_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L1_5_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage4_L1_5_depthwise/depthwise"
+  input: "Openpose/MConv_Stage4_L1_5_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L1_5_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage4_L1_5_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage4_L1_5_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L2_1_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage4_concat"
+  input: "Openpose/MConv_Stage4_L2_1_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L2_1_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage4_L2_1_depthwise/depthwise"
+  input: "Openpose/MConv_Stage4_L2_1_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L2_1_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage4_L2_1_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage4_L2_1_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L2_1_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage4_L2_1_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L2_2_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage4_L2_1_pointwise/Relu"
+  input: "Openpose/MConv_Stage4_L2_2_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L2_2_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage4_L2_2_depthwise/depthwise"
+  input: "Openpose/MConv_Stage4_L2_2_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L2_2_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage4_L2_2_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage4_L2_2_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L2_2_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage4_L2_2_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L2_3_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage4_L2_2_pointwise/Relu"
+  input: "Openpose/MConv_Stage4_L2_3_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L2_3_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage4_L2_3_depthwise/depthwise"
+  input: "Openpose/MConv_Stage4_L2_3_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L2_3_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage4_L2_3_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage4_L2_3_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L2_3_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage4_L2_3_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L2_4_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage4_L2_3_pointwise/Relu"
+  input: "Openpose/MConv_Stage4_L2_4_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L2_4_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage4_L2_4_depthwise/depthwise"
+  input: "Openpose/MConv_Stage4_L2_4_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L2_4_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage4_L2_4_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage4_L2_4_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L2_4_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage4_L2_4_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L2_5_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage4_L2_4_pointwise/Relu"
+  input: "Openpose/MConv_Stage4_L2_5_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L2_5_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage4_L2_5_depthwise/depthwise"
+  input: "Openpose/MConv_Stage4_L2_5_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage4_L2_5_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage4_L2_5_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage4_L2_5_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_concat"
+  op: "ConcatV2"
+  input: "Openpose/MConv_Stage4_L1_5_pointwise/BatchNorm/FusedBatchNorm"
+  input: "Openpose/MConv_Stage4_L2_5_pointwise/BatchNorm/FusedBatchNorm"
+  input: "feat_concat"
+  input: "Openpose/MConv_Stage5_concat/axis"
+  attr {
+    key: "N"
+    value {
+      i: 3
+    }
+  }
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "Tidx"
+    value {
+      type: DT_INT32
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L1_1_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage5_concat"
+  input: "Openpose/MConv_Stage5_L1_1_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L1_1_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage5_L1_1_depthwise/depthwise"
+  input: "Openpose/MConv_Stage5_L1_1_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L1_1_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage5_L1_1_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage5_L1_1_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L1_1_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage5_L1_1_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L1_2_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage5_L1_1_pointwise/Relu"
+  input: "Openpose/MConv_Stage5_L1_2_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L1_2_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage5_L1_2_depthwise/depthwise"
+  input: "Openpose/MConv_Stage5_L1_2_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L1_2_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage5_L1_2_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage5_L1_2_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L1_2_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage5_L1_2_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L1_3_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage5_L1_2_pointwise/Relu"
+  input: "Openpose/MConv_Stage5_L1_3_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L1_3_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage5_L1_3_depthwise/depthwise"
+  input: "Openpose/MConv_Stage5_L1_3_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L1_3_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage5_L1_3_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage5_L1_3_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L1_3_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage5_L1_3_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L1_4_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage5_L1_3_pointwise/Relu"
+  input: "Openpose/MConv_Stage5_L1_4_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L1_4_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage5_L1_4_depthwise/depthwise"
+  input: "Openpose/MConv_Stage5_L1_4_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L1_4_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage5_L1_4_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage5_L1_4_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L1_4_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage5_L1_4_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L1_5_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage5_L1_4_pointwise/Relu"
+  input: "Openpose/MConv_Stage5_L1_5_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L1_5_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage5_L1_5_depthwise/depthwise"
+  input: "Openpose/MConv_Stage5_L1_5_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L1_5_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage5_L1_5_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage5_L1_5_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L2_1_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage5_concat"
+  input: "Openpose/MConv_Stage5_L2_1_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L2_1_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage5_L2_1_depthwise/depthwise"
+  input: "Openpose/MConv_Stage5_L2_1_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L2_1_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage5_L2_1_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage5_L2_1_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L2_1_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage5_L2_1_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L2_2_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage5_L2_1_pointwise/Relu"
+  input: "Openpose/MConv_Stage5_L2_2_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L2_2_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage5_L2_2_depthwise/depthwise"
+  input: "Openpose/MConv_Stage5_L2_2_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L2_2_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage5_L2_2_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage5_L2_2_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L2_2_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage5_L2_2_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L2_3_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage5_L2_2_pointwise/Relu"
+  input: "Openpose/MConv_Stage5_L2_3_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L2_3_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage5_L2_3_depthwise/depthwise"
+  input: "Openpose/MConv_Stage5_L2_3_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L2_3_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage5_L2_3_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage5_L2_3_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L2_3_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage5_L2_3_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L2_4_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage5_L2_3_pointwise/Relu"
+  input: "Openpose/MConv_Stage5_L2_4_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L2_4_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage5_L2_4_depthwise/depthwise"
+  input: "Openpose/MConv_Stage5_L2_4_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L2_4_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage5_L2_4_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage5_L2_4_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L2_4_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage5_L2_4_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L2_5_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage5_L2_4_pointwise/Relu"
+  input: "Openpose/MConv_Stage5_L2_5_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L2_5_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage5_L2_5_depthwise/depthwise"
+  input: "Openpose/MConv_Stage5_L2_5_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage5_L2_5_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage5_L2_5_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage5_L2_5_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_concat"
+  op: "ConcatV2"
+  input: "Openpose/MConv_Stage5_L1_5_pointwise/BatchNorm/FusedBatchNorm"
+  input: "Openpose/MConv_Stage5_L2_5_pointwise/BatchNorm/FusedBatchNorm"
+  input: "feat_concat"
+  input: "Openpose/MConv_Stage6_concat/axis"
+  attr {
+    key: "N"
+    value {
+      i: 3
+    }
+  }
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "Tidx"
+    value {
+      type: DT_INT32
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L1_1_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage6_concat"
+  input: "Openpose/MConv_Stage6_L1_1_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L1_1_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage6_L1_1_depthwise/depthwise"
+  input: "Openpose/MConv_Stage6_L1_1_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L1_1_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage6_L1_1_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage6_L1_1_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L1_1_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage6_L1_1_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L1_2_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage6_L1_1_pointwise/Relu"
+  input: "Openpose/MConv_Stage6_L1_2_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L1_2_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage6_L1_2_depthwise/depthwise"
+  input: "Openpose/MConv_Stage6_L1_2_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L1_2_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage6_L1_2_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage6_L1_2_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L1_2_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage6_L1_2_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L1_3_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage6_L1_2_pointwise/Relu"
+  input: "Openpose/MConv_Stage6_L1_3_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L1_3_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage6_L1_3_depthwise/depthwise"
+  input: "Openpose/MConv_Stage6_L1_3_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L1_3_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage6_L1_3_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage6_L1_3_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L1_3_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage6_L1_3_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L1_4_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage6_L1_3_pointwise/Relu"
+  input: "Openpose/MConv_Stage6_L1_4_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L1_4_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage6_L1_4_depthwise/depthwise"
+  input: "Openpose/MConv_Stage6_L1_4_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L1_4_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage6_L1_4_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage6_L1_4_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L1_4_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage6_L1_4_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L1_5_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage6_L1_4_pointwise/Relu"
+  input: "Openpose/MConv_Stage6_L1_5_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L1_5_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage6_L1_5_depthwise/depthwise"
+  input: "Openpose/MConv_Stage6_L1_5_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L1_5_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage6_L1_5_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage6_L1_5_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L2_1_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage6_concat"
+  input: "Openpose/MConv_Stage6_L2_1_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L2_1_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage6_L2_1_depthwise/depthwise"
+  input: "Openpose/MConv_Stage6_L2_1_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L2_1_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage6_L2_1_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage6_L2_1_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L2_1_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage6_L2_1_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L2_2_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage6_L2_1_pointwise/Relu"
+  input: "Openpose/MConv_Stage6_L2_2_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L2_2_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage6_L2_2_depthwise/depthwise"
+  input: "Openpose/MConv_Stage6_L2_2_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L2_2_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage6_L2_2_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage6_L2_2_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L2_2_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage6_L2_2_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L2_3_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage6_L2_2_pointwise/Relu"
+  input: "Openpose/MConv_Stage6_L2_3_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L2_3_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage6_L2_3_depthwise/depthwise"
+  input: "Openpose/MConv_Stage6_L2_3_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L2_3_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage6_L2_3_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage6_L2_3_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L2_3_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage6_L2_3_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L2_4_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage6_L2_3_pointwise/Relu"
+  input: "Openpose/MConv_Stage6_L2_4_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L2_4_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage6_L2_4_depthwise/depthwise"
+  input: "Openpose/MConv_Stage6_L2_4_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L2_4_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage6_L2_4_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage6_L2_4_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L2_4_pointwise/Relu"
+  op: "Relu"
+  input: "Openpose/MConv_Stage6_L2_4_pointwise/BatchNorm/FusedBatchNorm"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L2_5_depthwise/depthwise"
+  op: "DepthwiseConv2dNative"
+  input: "Openpose/MConv_Stage6_L2_4_pointwise/Relu"
+  input: "Openpose/MConv_Stage6_L2_5_depthwise/depthwise_weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L2_5_pointwise/Conv2D"
+  op: "Conv2D"
+  input: "Openpose/MConv_Stage6_L2_5_depthwise/depthwise"
+  input: "Openpose/MConv_Stage6_L2_5_pointwise/weights"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "data_format"
+    value {
+      s: "NHWC"
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "use_cudnn_on_gpu"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "Openpose/MConv_Stage6_L2_5_pointwise/BatchNorm/FusedBatchNorm"
+  op: "BiasAdd"
+  input: "Openpose/MConv_Stage6_L2_5_pointwise/Conv2D"
+  input: "Openpose/MConv_Stage6_L2_5_pointwise/Conv2D_bn_offset"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "Openpose/concat_stage7"
+  op: "ConcatV2"
+  input: "Openpose/MConv_Stage6_L2_5_pointwise/BatchNorm/FusedBatchNorm"
+  input: "Openpose/MConv_Stage6_L1_5_pointwise/BatchNorm/FusedBatchNorm"
+  input: "Openpose/concat_stage7/axis"
+  attr {
+    key: "N"
+    value {
+      i: 2
+    }
+  }
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "Tidx"
+    value {
+      type: DT_INT32
+    }
+  }
+}
+library {
+}
