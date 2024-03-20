@@ -21,6 +21,7 @@ import org.viar.core.model.CameraSpaceFeature;
 import org.viar.tracker.detection.ArucoDetectorWrapper;
 import org.viar.tracker.detection.BodyPoseDetector;
 import org.viar.tracker.model.MakerFeaturePointOffset;
+import org.viar.tracker.tracking.FeatureTracker;
 import org.viar.tracker.ui.DetectionAndTrackingLab;
 
 import javax.annotation.PostConstruct;
@@ -53,6 +54,9 @@ public class LabMonitor implements Runnable {
 
     private ArucoDetectorWrapper arucoDetector;
     private BodyPoseDetector bodyPoseDetector;
+    private FeatureTracker featureTracker;
+
+    private long frameCounter = 0;
 
     @Autowired
     private Map<String, CameraSetup> camerasConfig;
@@ -64,6 +68,7 @@ public class LabMonitor implements Runnable {
     private void init() throws InterruptedException {
         arucoDetector = new ArucoDetectorWrapper(0.065, markerFeaturePointOffsets);
         bodyPoseDetector = new BodyPoseDetector();
+        featureTracker = new FeatureTracker();
 
         capture = new VideoCapture(0, Videoio.CAP_V4L2, new MatOfInt(
                 Videoio.CAP_PROP_FOURCC, VideoWriter.fourcc('M', 'J', 'P', 'G'),
@@ -145,9 +150,15 @@ public class LabMonitor implements Runnable {
 
     private void processFrame(Mat frameSrc, Mat frameMarkup) {
         //var arucos = arucoDetector.detect(frameSrc, camerasConfig.get("2"));
-        var bodyParts = bodyPoseDetector.detect(frameSrc, camerasConfig.get("2"));
 
-        drawFeatures(frameMarkup, bodyParts);
+        frameCounter++;
+        var features = featureTracker.trackFeatures(frameSrc);
+        if (features.size() == 0) {
+            features = bodyPoseDetector.detect(frameSrc, camerasConfig.get("2"));
+            featureTracker.updateFeatures(frameSrc, features);
+        }
+
+        drawFeatures(frameMarkup, features);
     }
 
     private void drawFeatures(Mat frame, Collection<CameraSpaceFeature> features) {
@@ -158,7 +169,13 @@ public class LabMonitor implements Runnable {
         final var yellow = new Scalar(0, 200, 200);
         for (var feature : features) {
             var position = new Point(feature.getX(), feature.getY());
-            Imgproc.circle(frame, position, 5, color, 2);
+            var roi = feature.getRoI();
+            if (roi != null) {
+                Imgproc.rectangle(frame, feature.getRoI(), color, 2);
+            } else {
+                Imgproc.circle(frame, position, 3, color, 2);
+            }
+
             Imgproc.putText(frame, String.valueOf(feature.getId()), position, Imgproc.FONT_HERSHEY_SIMPLEX, 1.5, yellow, 2);
         }
     }
