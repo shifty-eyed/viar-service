@@ -94,12 +94,14 @@ public class LabMonitor implements Runnable {
                 } catch (InterruptedException ex) {
                     throw new RuntimeException(ex);
                 } finally {
-                    System.out.println("System.exit(0) - start");
                     System.exit(0);
-                    System.out.println("System.exit(0) - done");
                 }
             });
 
+        });
+
+        labUI.detectFeatures.addActionListener(e -> {
+            refreshDetection();
         });
 
         //check if the camera is opened and able to capture frames
@@ -141,6 +143,7 @@ public class LabMonitor implements Runnable {
                 labUI.labelFPS.setText(String.format("%d FPS", frameCount));
                 frameCount = 0;
                 startTime = System.currentTimeMillis();
+                refreshDetection();
             }
         }
         System.out.println("Shutting down");
@@ -154,11 +157,15 @@ public class LabMonitor implements Runnable {
         frameCounter++;
         var features = featureTracker.trackFeatures(frameSrc);
         if (features.size() == 0) {
-            features = bodyPoseDetector.detect(frameSrc, camerasConfig.get("2"));
-            featureTracker.updateFeatures(frameSrc, features);
+            features = refreshDetection();
         }
-
         drawFeatures(frameMarkup, features);
+    }
+
+    private Collection<CameraSpaceFeature> refreshDetection() {
+        var features = bodyPoseDetector.detect(frameSrc, camerasConfig.get("2"));
+        featureTracker.updateFeatures(frameSrc, features);
+        return features;
     }
 
     private void drawFeatures(Mat frame, Collection<CameraSpaceFeature> features) {
