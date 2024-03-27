@@ -32,6 +32,7 @@ public class FeatureTracker {
 	}
 
 	public synchronized void updateFeatures(Mat frame, Collection<CameraSpaceFeature> newFeatures) {
+		//If need to track a nose only
 		//newFeatures = newFeatures.stream().filter(f -> f.getId() == 0).toList();
 		for (var feature : newFeatures) {
 			var key = feature.getUniqueName();
@@ -49,9 +50,8 @@ public class FeatureTracker {
 	}
 
 	public synchronized Collection<CameraSpaceFeature> trackFeatures(Mat frame) {
-		var result = new ArrayList<CameraSpaceFeature>(trackers.size());
-		for (var bundle : trackers.values()) {
-			//if (bundle.feature.getId() != 0) continue;
+		final var result = new ArrayList<CameraSpaceFeature>(trackers.size());
+		trackers.values().parallelStream().forEach(bundle -> {
 			var roI = bundle.feature.getRoI();
 			var success = false;
 			try {
@@ -65,10 +65,8 @@ public class FeatureTracker {
 				bundle.feature.setWidth(roI.width);
 				bundle.feature.setHeight(roI.height);
 				result.add(bundle.feature);
-			} else {
-				//trackers.remove(bundle.feature.getUniqueName());
 			}
-		}
+		});
 		return result;
 	}
 
