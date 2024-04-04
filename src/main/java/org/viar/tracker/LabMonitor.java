@@ -2,26 +2,26 @@ package org.viar.tracker;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfInt;
+import org.opencv.core.*;
 import org.opencv.core.Point;
-import org.opencv.core.Scalar;
 import org.opencv.highgui.HighGui;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.video.BackgroundSubtractorKNN;
+import org.opencv.video.Video;
 import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.VideoWriter;
 import org.opencv.videoio.Videoio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
-import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import org.springframework.stereotype.Component;
-import org.viar.core.CameraRegistry;
 import org.viar.core.model.CameraSetup;
 import org.viar.core.model.CameraSpaceFeature;
 import org.viar.tracker.detection.ArucoDetectorWrapper;
 import org.viar.tracker.detection.BodyPoseDetector;
 import org.viar.tracker.model.MakerFeaturePointOffset;
 import org.viar.tracker.tracking.FeatureTracker;
+import org.viar.tracker.tracking.StaticBackgroundSubstractor;
 import org.viar.tracker.ui.DetectionAndTrackingLab;
 
 import javax.annotation.PostConstruct;
@@ -58,6 +58,8 @@ public class LabMonitor implements Runnable {
 
     private long frameCounter = 0;
 
+    private VideoWriter videoWriter;
+
     @Autowired
     private Map<String, CameraSetup> camerasConfig;
 
@@ -79,50 +81,12 @@ public class LabMonitor implements Runnable {
         frameSrc = new Mat();
         frameMarkup = new Mat();
 
-        window = new JFrame("Lab");
-        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        labUI = new DetectionAndTrackingLab();
-        window.setContentPane(labUI.mainPanel);
-        var ctlSize = labUI.controlPanel.getSize();
-        window.setSize(ctlSize.width + frameSize.width, frameSize.height + 30);
-        window.setVisible(true);
+        initUI();
+        checkCaptureErrors();
 
-        labUI.btnExit.addActionListener(e -> {
-            SwingUtilities.invokeLater(() -> {
-                try {
-                    shutdown();
-                } catch (InterruptedException ex) {
-                    throw new RuntimeException(ex);
-                } finally {
-                    System.exit(0);
-                }
-            });
-
-        });
-
-        labUI.detectFeatures.addActionListener(e -> {
-            refreshDetection();
-        });
-
-        //check if the camera is opened and able to capture frames
-        if (!capture.isOpened()) {
-            System.out.println("Error - cannot open camera");
-            JOptionPane.showMessageDialog(window, "Cannot open camera", "Error", JOptionPane.ERROR_MESSAGE);
-            shutdown();
-            System.exit(1);
-        } else {
-            capture.read(frameSrc);
-            if (frameSrc.width() == frameSize.width && frameSrc.height() == frameSize.height) {
-                pool = Executors.newSingleThreadExecutor();
-                pool.execute(this);
-            } else {
-                System.out.println("Error - cannot capture requested frame size");
-                JOptionPane.showMessageDialog(window, "Cannot capture requested frame size", "Error", JOptionPane.ERROR_MESSAGE);
-                shutdown();
-                System.exit(1);
-            }
-        }
-
+        //DEBUG
+        frameSrc = Imgcodecs.imread("models/pose1-black.jpg");
+        Imgproc.threshold(frameSrc, frameSrc, 190, 255, Imgproc.THRESH_BINARY);
     }
 
     @Override
@@ -130,10 +94,15 @@ public class LabMonitor implements Runnable {
         var frameCount = 0;
         var startTime = System.currentTimeMillis();
         while (running) {
-            capture.read(frameSrc);
+            synchronized (frameSrc) {
+                capture.read(frameSrc);
+            }
             frameMarkup = frameSrc.clone();
-
-            processFrame(frameSrc, frameMarkup);
+            if (videoWriter != null) {
+                videoWriter.write(frameSrc);
+            } else {
+                processFrame(frameSrc, frameMarkup);
+            }
 
             var javaImage = HighGui.toBufferedImage(frameMarkup);
             labUI.imagePanel.getGraphics().drawImage(javaImage, 0, 0, null);
@@ -163,6 +132,7 @@ public class LabMonitor implements Runnable {
     }
 
     private Collection<CameraSpaceFeature> refreshDetection() {
+        //extract background
         var features = bodyPoseDetector.detect(frameSrc, camerasConfig.get("2"));
         featureTracker.updateFeatures(frameSrc, features);
         return features;
@@ -185,6 +155,76 @@ public class LabMonitor implements Runnable {
 
             Imgproc.putText(frame, String.valueOf(feature.getId()), position, Imgproc.FONT_HERSHEY_SIMPLEX, 1.5, yellow, 2);
         }
+    }
+
+    private void checkCaptureErrors() throws InterruptedException {
+        //check if the camera is opened and able to capture frames
+        if (!capture.isOpened()) {
+            System.out.println("Error - cannot open camera");
+            JOptionPane.showMessageDialog(window, "Cannot open camera", "Error", JOptionPane.ERROR_MESSAGE);
+            shutdown();
+            System.exit(1);
+        } else {
+            capture.read(frameSrc);
+            if (frameSrc.width() == frameSize.width && frameSrc.height() == frameSize.height) {
+                pool = Executors.newSingleThreadExecutor();
+                pool.execute(this);
+            } else {
+                System.out.println("Error - cannot capture requested frame size");
+                JOptionPane.showMessageDialog(window, "Cannot capture requested frame size", "Error", JOptionPane.ERROR_MESSAGE);
+                shutdown();
+                System.exit(1);
+            }
+        }
+    }
+
+    private void initUI() {
+        window = new JFrame("Lab");
+        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        labUI = new DetectionAndTrackingLab();
+        window.setContentPane(labUI.mainPanel);
+        var ctlSize = labUI.controlPanel.getSize();
+        window.setSize(ctlSize.width + frameSize.width, frameSize.height + 30);
+        window.setVisible(true);
+
+        labUI.btnExit.addActionListener(e -> {
+            SwingUtilities.invokeLater(() -> {
+                try {
+                    shutdown();
+                } catch (InterruptedException ex) {
+                    throw new RuntimeException(ex);
+                } finally {
+                    System.exit(0);
+                }
+            });
+
+        });
+
+        labUI.btnSetBackground.addActionListener(e -> {
+            //backgroundSubstractor.setBackground(frameSrc);
+        });
+
+        labUI.btnSnapshot.addActionListener(e -> {
+            synchronized (frameSrc) {
+                var timestamp = System.currentTimeMillis();
+                Imgcodecs.imwrite("media/image-" + timestamp + ".jpg", frameSrc);
+            }
+        });
+
+        labUI.btnRecord.addActionListener(e -> {
+            if (videoWriter == null) {
+                var timestamp = System.currentTimeMillis();
+                var size = new Size(frameSize.width, frameSize.height);
+                videoWriter = new VideoWriter("media/video-" + timestamp + ".avi", VideoWriter.fourcc('M', 'J', 'P', 'G'), 30, size);
+                labUI.btnRecord.setText("Stop");
+            } else {
+                refreshDetection();
+                videoWriter.release();
+                videoWriter = null;
+                labUI.btnRecord.setText("Record");
+            }
+        });
+
     }
 
     @PreDestroy
