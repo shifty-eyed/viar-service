@@ -55,9 +55,9 @@ public class ArucoDetectorWrapper implements FeatureDetector {
 
         List<CameraSpaceFeature> result = new ArrayList<>(detectedCorners.size());
 
-        for (int i=0; i<detectedCorners.size(); i++){
+        for (int i=0; i<detectedCorners.size(); i++) {
             var singleMarker4Corners = detectedCorners.get(i);
-            var singleMarkerId = (int)detectedIds.get(i, 0)[0];
+            var singleMarkerId = (int) detectedIds.get(i, 0)[0];
 
             final Mat rvec = new Mat();
             final Mat tvec = new Mat();
@@ -82,6 +82,15 @@ public class ArucoDetectorWrapper implements FeatureDetector {
             var feature = new CameraSpaceFeature();
             feature.setX(featureCenterNormalized.x);
             feature.setY(featureCenterNormalized.y);
+
+            var pointsList = imagePoints.toList();
+            var minX = pointsList.stream().map(e -> e.x).reduce(Double.MAX_VALUE, Double::min);
+            var minY = pointsList.stream().map(e -> e.y).reduce(Double.MAX_VALUE, Double::min);
+            var maxX = pointsList.stream().map(e -> e.x).reduce(0.0, Double::max);
+            var maxY = pointsList.stream().map(e -> e.y).reduce(0.0, Double::max);
+
+            feature.setWidth(Math.abs(maxX - minX));
+            feature.setHeight(Math.abs(maxY - minY));
             feature.setId(featurePointConfig.getMarkerId());
             feature.setCameraName(cameraSetup.getName());
             feature.setObjectName("Aruco");

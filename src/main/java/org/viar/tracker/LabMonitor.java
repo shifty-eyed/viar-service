@@ -15,6 +15,8 @@ import org.opencv.videoio.Videoio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StopWatch;
+import org.viar.core.StopwatchStats;
 import org.viar.core.model.CameraSetup;
 import org.viar.core.model.CameraSpaceFeature;
 import org.viar.tracker.detection.ArucoDetectorWrapper;
@@ -40,7 +42,6 @@ public class LabMonitor implements Runnable {
 
     private final Dimension frameSize = new Dimension(1920, 1080);
 
-    private ExecutorService pool;
 
     @Setter @Getter
     private boolean running = true;
@@ -56,9 +57,11 @@ public class LabMonitor implements Runnable {
     private BodyPoseDetector bodyPoseDetector;
     private FeatureTracker featureTracker;
 
-    private long frameCounter = 0;
-
     private VideoWriter videoWriter;
+    private ExecutorService pool;
+
+    @Autowired
+    private StopwatchStats stats;
 
     @Autowired
     private Map<String, CameraSetup> camerasConfig;
@@ -110,9 +113,10 @@ public class LabMonitor implements Runnable {
             frameCount++;
             if (System.currentTimeMillis() - startTime > 1000) {
                 labUI.labelFPS.setText(String.format("%d FPS", frameCount));
+                labUI.textStats.setText(stats.getStats());
                 frameCount = 0;
                 startTime = System.currentTimeMillis();
-                refreshDetection();
+                //refreshDetection();
             }
         }
         System.out.println("Shutting down");
@@ -121,20 +125,25 @@ public class LabMonitor implements Runnable {
     }
 
     private void processFrame(Mat frameSrc, Mat frameMarkup) {
-        //var arucos = arucoDetector.detect(frameSrc, camerasConfig.get("2"));
-
-        frameCounter++;
+        stats.start("trackFeatures");
         var features = featureTracker.trackFeatures(frameSrc);
+        stats.stop("trackFeatures");
         if (features.size() == 0) {
             features = refreshDetection();
+            //maybe ix luchshe ne trackat a obnovlyat
         }
+        features = refreshDetection();
         drawFeatures(frameMarkup, features);
     }
 
     private Collection<CameraSpaceFeature> refreshDetection() {
-        //extract background
-        var features = bodyPoseDetector.detect(frameSrc, camerasConfig.get("2"));
+        //var features = bodyPoseDetector.detect(frameSrc, camerasConfig.get("2"));
+        stats.start("aruco.detect");
+        var features = arucoDetector.detect(frameSrc, camerasConfig.get("2"));
+        stats.stop("aruco.detect");
+        stats.start("updateFeatures");
         featureTracker.updateFeatures(frameSrc, features);
+        stats.stop("updateFeatures");
         return features;
     }
 

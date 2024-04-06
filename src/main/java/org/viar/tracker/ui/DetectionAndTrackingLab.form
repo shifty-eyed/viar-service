@@ -15,11 +15,6 @@
           <color color="-16777216"/>
         </border>
         <children>
-          <vspacer id="e1ede">
-            <constraints>
-              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
-            </constraints>
-          </vspacer>
           <component id="671bd" class="javax.swing.JButton" binding="btnExit">
             <constraints>
               <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
@@ -59,6 +54,14 @@
             <properties>
               <text value="Record"/>
             </properties>
+          </component>
+          <component id="11316" class="javax.swing.JTextPane" binding="textStats">
+            <constraints>
+              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="50"/>
+              </grid>
+            </constraints>
+            <properties/>
           </component>
         </children>
       </grid>
