@@ -14,6 +14,7 @@ import org.opencv.videoio.VideoWriter;
 import org.opencv.videoio.Videoio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 import org.viar.core.StopwatchStats;
@@ -29,6 +30,8 @@ import org.viar.tracker.ui.DetectionAndTrackingLab;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.swing.*;
+import javax.vecmath.Point2d;
+import javax.vecmath.Tuple2d;
 import java.awt.*;
 import java.util.Collection;
 import java.util.Map;
@@ -41,7 +44,6 @@ import java.util.concurrent.TimeUnit;
 public class LabMonitor implements Runnable {
 
     private final Dimension frameSize = new Dimension(1920, 1080);
-
 
     @Setter @Getter
     private boolean running = true;
@@ -69,17 +71,24 @@ public class LabMonitor implements Runnable {
     @Autowired
     private Map<Integer, MakerFeaturePointOffset> markerFeaturePointOffsets;
 
+    private static final String CAP_FILE = "media/body-movements1.avi";
+
     @PostConstruct
     private void init() throws InterruptedException {
         arucoDetector = new ArucoDetectorWrapper(0.065, markerFeaturePointOffsets);
         bodyPoseDetector = new BodyPoseDetector();
         featureTracker = new FeatureTracker();
 
-        capture = new VideoCapture(0, Videoio.CAP_V4L2, new MatOfInt(
+        if (CAP_FILE != null) {
+            capture = new VideoCapture(CAP_FILE);
+        } else {
+            capture = new VideoCapture(0, Videoio.CAP_V4L2, new MatOfInt(
                 Videoio.CAP_PROP_FOURCC, VideoWriter.fourcc('M', 'J', 'P', 'G'),
                 Videoio.CAP_PROP_FRAME_WIDTH, frameSize.width,
                 Videoio.CAP_PROP_FRAME_HEIGHT, frameSize.height
-        ));
+            ));
+        }
+
 
         frameSrc = new Mat();
         frameMarkup = new Mat();
@@ -88,8 +97,8 @@ public class LabMonitor implements Runnable {
         checkCaptureErrors();
 
         //DEBUG
-        frameSrc = Imgcodecs.imread("models/pose1-black.jpg");
-        Imgproc.threshold(frameSrc, frameSrc, 190, 255, Imgproc.THRESH_BINARY);
+        //frameSrc = Imgcodecs.imread("models/pose1-black.jpg");
+        //Imgproc.threshold(frameSrc, frameSrc, 190, 255, Imgproc.THRESH_BINARY);
     }
 
     @Override
@@ -98,7 +107,11 @@ public class LabMonitor implements Runnable {
         var startTime = System.currentTimeMillis();
         while (running) {
             synchronized (frameSrc) {
-                capture.read(frameSrc);
+                var gotFrame = capture.read(frameSrc);
+                if (!gotFrame && CAP_FILE != null) {
+                    capture.set(Videoio.CAP_PROP_POS_FRAMES, 0);
+                    continue;
+                }
             }
             frameMarkup = frameSrc.clone();
             if (videoWriter != null) {
@@ -113,10 +126,9 @@ public class LabMonitor implements Runnable {
             frameCount++;
             if (System.currentTimeMillis() - startTime > 1000) {
                 labUI.labelFPS.setText(String.format("%d FPS", frameCount));
-                labUI.textStats.setText(stats.getStats());
+                //labUI.textStats.setText(stats.getStats());
                 frameCount = 0;
                 startTime = System.currentTimeMillis();
-                //refreshDetection();
             }
         }
         System.out.println("Shutting down");
@@ -130,17 +142,21 @@ public class LabMonitor implements Runnable {
         stats.stop("trackFeatures");
         if (features.size() == 0) {
             features = refreshDetection();
-            //maybe ix luchshe ne trackat a obnovlyat
         }
-        features = refreshDetection();
         drawFeatures(frameMarkup, features);
     }
 
+    @Scheduled(fixedRate = 2000)
     private Collection<CameraSpaceFeature> refreshDetection() {
-        //var features = bodyPoseDetector.detect(frameSrc, camerasConfig.get("2"));
-        stats.start("aruco.detect");
-        var features = arucoDetector.detect(frameSrc, camerasConfig.get("2"));
-        stats.stop("aruco.detect");
+        stats.start("body.detect");
+        var features = bodyPoseDetector.detect(frameSrc, camerasConfig.get("2"));
+        stats.stop("body.detect");
+        //stats.start("aruco.detect");
+        //var features = arucoDetector.detect(frameSrc, camerasConfig.get("2"));
+        //stats.stop("aruco.detect");
+
+        //TODO: interpolate detected features with tracked features
+
         stats.start("updateFeatures");
         featureTracker.updateFeatures(frameSrc, features);
         stats.stop("updateFeatures");

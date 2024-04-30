@@ -23,13 +23,8 @@ https://stackoverflow.com/questions/55483634/how-to-detect-only-corners-that-has
 
 
 TODO:
+- smooth transition from tracked to detected body parts
 - feature coordinates normalized to 0-1 with center in the middle
-- aruco improvements:
-    - use projected points
-    - if >1 detected use mean
-    - if close to center round to zero (0,0,0)
-    - add world-space-offset configuaration for every aruco marker
-- background subtraction, based on the static frame with no people
 - costume for best detection
 
 

@@ -29,7 +29,7 @@ public class StopwatchStats {
 		item.runningDuration += System.currentTimeMillis() - item.srartTime;
 		item.frameCount++;
 		item.avgTime = item.runningDuration / item.frameCount;
-		if (item.frameCount > 30) {
+		if (item.frameCount > 50) {
 			item.runningDuration = 0;
 			item.frameCount = 0;
 		}

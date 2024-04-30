@@ -54,6 +54,10 @@ public class FeatureTracker {
 
 	private CameraSpaceFeature trackEachRoI(Mat frame, FeatureTrack bundle) {
 		var roI = bundle.feature.getRoI();
+		if (roI == null) {
+			System.out.println("Roi is null for " + bundle.feature.getUniqueName());
+			return bundle.feature;
+		}
 		try {
 			bundle.isTrackedSuccess = bundle.tracker.update(frame, roI);
 		} catch (Exception e) {
