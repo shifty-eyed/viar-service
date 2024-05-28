@@ -7,31 +7,24 @@ import org.opencv.core.Point;
 import org.opencv.highgui.HighGui;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.video.BackgroundSubtractorKNN;
-import org.opencv.video.Video;
 import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.VideoWriter;
 import org.opencv.videoio.Videoio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StopWatch;
 import org.viar.core.StopwatchStats;
 import org.viar.core.model.CameraSetup;
 import org.viar.core.model.CameraSpaceFeature;
 import org.viar.tracker.detection.ArucoDetectorWrapper;
 import org.viar.tracker.detection.BodyPoseDetector;
 import org.viar.tracker.model.MakerFeaturePointOffset;
-import org.viar.tracker.tracking.FeatureTracker;
-import org.viar.tracker.tracking.StaticBackgroundSubstractor;
+import org.viar.tracker.tracking.TrackingRegistry;
 import org.viar.tracker.ui.DetectionAndTrackingLab;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.swing.*;
-import javax.vecmath.Point2d;
-import javax.vecmath.Tuple2d;
 import java.awt.*;
 import java.util.Collection;
 import java.util.Map;
@@ -44,6 +37,7 @@ import java.util.concurrent.TimeUnit;
 public class LabMonitor implements Runnable {
 
     private final Dimension frameSize = new Dimension(1920, 1080);
+    private static final int REDETECT_EVERY_FRAMES = 10;
 
     @Setter @Getter
     private boolean running = true;
@@ -57,10 +51,11 @@ public class LabMonitor implements Runnable {
 
     private ArucoDetectorWrapper arucoDetector;
     private BodyPoseDetector bodyPoseDetector;
-    private FeatureTracker featureTracker;
+    private TrackingRegistry featureTracker;
 
     private VideoWriter videoWriter;
     private ExecutorService pool;
+    private int detectionFrameCount = 0;
 
     @Autowired
     private StopwatchStats stats;
@@ -77,7 +72,7 @@ public class LabMonitor implements Runnable {
     private void init() throws InterruptedException {
         arucoDetector = new ArucoDetectorWrapper(0.065, markerFeaturePointOffsets);
         bodyPoseDetector = new BodyPoseDetector();
-        featureTracker = new FeatureTracker();
+        featureTracker = new TrackingRegistry();
 
         if (CAP_FILE != null) {
             capture = new VideoCapture(CAP_FILE);
@@ -137,16 +132,14 @@ public class LabMonitor implements Runnable {
     }
 
     private void processFrame(Mat frameSrc, Mat frameMarkup) {
-        stats.start("trackFeatures");
-        var features = featureTracker.trackFeatures(frameSrc);
-        stats.stop("trackFeatures");
-        if (features.size() == 0) {
-            features = refreshDetection();
+        var features = detectionFrameCount == 0 ? refreshDetection() : featureTracker.trackFeatures(frameSrc);
+        detectionFrameCount++;
+    if (detectionFrameCount > REDETECT_EVERY_FRAMES) {
+            detectionFrameCount = 0;
         }
         drawFeatures(frameMarkup, features);
     }
 
-    @Scheduled(fixedRate = 2000)
     private Collection<CameraSpaceFeature> refreshDetection() {
         stats.start("body.detect");
         var features = bodyPoseDetector.detect(frameSrc, camerasConfig.get("2"));
@@ -155,10 +148,9 @@ public class LabMonitor implements Runnable {
         //var features = arucoDetector.detect(frameSrc, camerasConfig.get("2"));
         //stats.stop("aruco.detect");
 
-        //TODO: interpolate detected features with tracked features
 
         stats.start("updateFeatures");
-        featureTracker.updateFeatures(frameSrc, features);
+        featureTracker.submitDetected(frameSrc, features);
         stats.stop("updateFeatures");
         return features;
     }
@@ -172,13 +164,14 @@ public class LabMonitor implements Runnable {
         for (var feature : features) {
             var position = new Point(feature.getX(), feature.getY());
             var roi = feature.getRoI();
-            if (roi != null) {
+            /*if (roi != null) {
                 Imgproc.rectangle(frame, feature.getRoI(), color, 2);
             } else {
                 Imgproc.circle(frame, position, 3, color, 2);
-            }
+            }*/
+            Imgproc.circle(frame, position, 10, color, -1);
 
-            Imgproc.putText(frame, String.valueOf(feature.getId()), position, Imgproc.FONT_HERSHEY_SIMPLEX, 1.5, yellow, 2);
+            //Imgproc.putText(frame, String.valueOf(feature.getId()), position, Imgproc.FONT_HERSHEY_SIMPLEX, 1.5, yellow, 2);
         }
     }
 

@@ -24,8 +24,17 @@ https://stackoverflow.com/questions/55483634/how-to-detect-only-corners-that-has
 
 TODO:
 - smooth transition from tracked to detected body parts
+  instead of replacing feature with newly detected, add it to stack,
+  keep dictionary/history of last n detections
+- look for better tracking alg
 - feature coordinates normalized to 0-1 with center in the middle
 - costume for best detection
+- new idea: let model detect rough body parts and then within range of detected body part,
+    find the precise marker, maybe tracking would not even needed
 
 
+problematic situation:
+when new detected coordinates are far from the last tracked coordinates
+- solution: keep track of last n detections, if new detection is far from last tracked,
+    use last tracked, if new detection is close to last tracked, use new detection
 

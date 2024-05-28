@@ -15,7 +15,7 @@ import java.util.List;
 
 public class BodyPoseDetector implements FeatureDetector {
 
-	private static final double THRESHOLD = 0.2;
+	private static final double THRESHOLD = 0.4;
 	private static final int NUM_PARTS = 18;
 	private static final Size INPUT_IMAGE_SIZE = new Size(656, 368);
 	private static final Scalar INPUT_IMAGE_MEAN = new Scalar(128, 128, 128);
@@ -58,12 +58,14 @@ public class BodyPoseDetector implements FeatureDetector {
 			List<MatOfPoint> contours = new ArrayList<>();
 			Imgproc.findContours(heatMap, contours, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
 			var boundingRect = new Rect();
+			boundingRect.width = 5;
+			boundingRect.height = 5;
 			if (contours.size() > 0) {
 				boundingRect = Imgproc.boundingRect(contours.get(0));
 			}
 
 			if (mm.maxVal > THRESHOLD) {
-				features.add(makeFeature(i, mm.maxLoc.x * sx, mm.maxLoc.y * sy, boundingRect.width * sx, boundingRect.height * sy, cameraSetup));
+				features.add(makeFeature(i, mm.maxLoc.x * sx, mm.maxLoc.y * sy, boundingRect.width * sx * 1.2, boundingRect.height * sy * 1.2, cameraSetup));
 			}
 		}
 		return features;
