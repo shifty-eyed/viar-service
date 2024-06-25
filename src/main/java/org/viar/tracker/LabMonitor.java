@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 public class LabMonitor implements Runnable {
 
     private final Dimension frameSize = new Dimension(1920, 1080);
-    private static final int REDETECT_EVERY_FRAMES = 10;
+    private static final int REDETECT_EVERY_FRAMES = 20;
 
     @Setter @Getter
     private boolean running = true;
@@ -72,7 +72,7 @@ public class LabMonitor implements Runnable {
     private void init() throws InterruptedException {
         arucoDetector = new ArucoDetectorWrapper(0.065, markerFeaturePointOffsets);
         bodyPoseDetector = new BodyPoseDetector();
-        featureTracker = new TrackingRegistry();
+        featureTracker = new TrackingRegistry(REDETECT_EVERY_FRAMES);
 
         if (CAP_FILE != null) {
             capture = new VideoCapture(CAP_FILE);
@@ -134,7 +134,7 @@ public class LabMonitor implements Runnable {
     private void processFrame(Mat frameSrc, Mat frameMarkup) {
         var features = detectionFrameCount == 0 ? refreshDetection() : featureTracker.trackFeatures(frameSrc);
         detectionFrameCount++;
-    if (detectionFrameCount > REDETECT_EVERY_FRAMES) {
+        if (detectionFrameCount > REDETECT_EVERY_FRAMES) {
             detectionFrameCount = 0;
         }
         drawFeatures(frameMarkup, features);
@@ -142,7 +142,7 @@ public class LabMonitor implements Runnable {
 
     private Collection<CameraSpaceFeature> refreshDetection() {
         stats.start("body.detect");
-        var features = bodyPoseDetector.detect(frameSrc, camerasConfig.get("2"));
+        var detectedFeatures = bodyPoseDetector.detect(frameSrc, camerasConfig.get("2"));
         stats.stop("body.detect");
         //stats.start("aruco.detect");
         //var features = arucoDetector.detect(frameSrc, camerasConfig.get("2"));
@@ -150,9 +150,9 @@ public class LabMonitor implements Runnable {
 
 
         stats.start("updateFeatures");
-        featureTracker.submitDetected(frameSrc, features);
+        var balancedFeatures = featureTracker.submitDetected(frameSrc, detectedFeatures);
         stats.stop("updateFeatures");
-        return features;
+        return balancedFeatures;
     }
 
     private void drawFeatures(Mat frame, Collection<CameraSpaceFeature> features) {

@@ -7,22 +7,25 @@ import java.util.*;
 
 public class TrackingRegistry {
 
+	private final int ageLimit;
+
 	private Map<String, FeatureTrack> trackers = new HashMap<>();
 
+	public TrackingRegistry(int ageLimit) {
+		this.ageLimit = ageLimit;
+	}
 
-	public synchronized void submitDetected(Mat frame, Collection<CameraSpaceFeature> newFeatures) {
-		//If need to track a nose only
-		//newFeatures = newFeatures.stream().filter(f -> f.getId() == 0).toList();
-		for (var feature : newFeatures) {
+	public synchronized Collection<CameraSpaceFeature> submitDetected(Mat frame, Collection<CameraSpaceFeature> newFeatures) {
+		return newFeatures.stream().map(feature -> {
 			var key = feature.getUniqueName();
 			var bundle = trackers.get(key);
 			if (bundle == null) {
-				bundle = new FeatureTrack(feature);
+				bundle = new FeatureTrack(feature, ageLimit);
 				trackers.put(key, bundle);
 
 			}
-			bundle.submitDetected(frame, feature.getRoI());
-		};
+			return bundle.submitDetected(frame, feature.getRoI());
+		}).toList();
 	}
 
 	public synchronized Collection<CameraSpaceFeature> trackFeatures(Mat frame) {

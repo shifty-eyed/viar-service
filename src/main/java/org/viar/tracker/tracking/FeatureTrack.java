@@ -17,23 +17,24 @@ TODO: keep last couple of detected just one tracked, and predict should merge th
  */
 public class FeatureTrack {
 
-	private static final int AGE_LIMIT = 10;
-
 	private final CameraSpaceFeature initialRef;
 	private int age;
+	private final int ageLimit;
 	private Rect trackedRectAfterDetection;
 	private Rect trackedRectBeforeDetection;
 	private Tracker tracker;
 
-	public FeatureTrack(CameraSpaceFeature initialReference) {
+	public FeatureTrack(CameraSpaceFeature initialReference, int ageLimit) {
+		this.ageLimit = ageLimit;
 		this.initialRef = initialReference;
 	}
 
 	public CameraSpaceFeature submitDetected(Mat frame, Rect detectedRect) {
+		// the problem is here, when we re-assign the tracker, we lose the previous state
 		tracker = TrackerKCF.create();
 		tracker.init(frame, detectedRect);
 		age = 0;
-		trackedRectBeforeDetection = trackedRectAfterDetection;
+		trackedRectBeforeDetection = trackedRectAfterDetection; // here we loose interpolation smooth
 		trackedRectAfterDetection = detectedRect;
 		return predict();
 	}
@@ -57,7 +58,7 @@ public class FeatureTrack {
 
 	private CameraSpaceFeature predict() {
 		CameraSpaceFeature result = new CameraSpaceFeature(initialRef);
-		var alpha = Math.min(1.0, (double) age / AGE_LIMIT);
+		var alpha = Math.min(1.0, (double) age / ageLimit);
 
 		if (trackedRectBeforeDetection == null) {
 			trackedRectBeforeDetection = trackedRectAfterDetection;
