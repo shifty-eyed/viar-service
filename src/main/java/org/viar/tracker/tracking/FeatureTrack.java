@@ -30,11 +30,10 @@ public class FeatureTrack {
 	}
 
 	public CameraSpaceFeature submitDetected(Mat frame, Rect detectedRect) {
-		// the problem is here, when we re-assign the tracker, we lose the previous state
 		tracker = TrackerKCF.create();
 		tracker.init(frame, detectedRect);
 		age = 0;
-		trackedRectBeforeDetection = trackedRectAfterDetection; // here we loose interpolation smooth
+		trackedRectBeforeDetection = trackedRectAfterDetection;
 		trackedRectAfterDetection = detectedRect;
 		return predict();
 	}
