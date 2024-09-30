@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 public class LabMonitor implements Runnable {
 
     private final Dimension frameSize = new Dimension(1920, 1080);
-    private static final int REDETECT_EVERY_FRAMES = 20;
+    private static final int REDETECT_EVERY_FRAMES = 5;
 
     @Setter @Getter
     private boolean running = true;
