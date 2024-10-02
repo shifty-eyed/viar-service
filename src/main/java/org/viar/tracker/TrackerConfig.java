@@ -6,6 +6,7 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 import org.viar.tracker.model.MakerFeaturePointOffset;
 import org.viar.tracker.model.TrackerNodeConfig;
@@ -20,6 +21,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Configuration
+@Profile("tracker")
 public class TrackerConfig {
 
     @Value("file:conf/tracker.json")

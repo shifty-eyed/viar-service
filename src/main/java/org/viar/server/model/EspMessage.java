@@ -22,10 +22,11 @@ public abstract class EspMessage {
 
 	public static EspMessage fromBytes(byte[] bytes) {
 		ByteBuffer data = ByteBuffer.wrap(bytes);
+		data.order(java.nio.ByteOrder.LITTLE_ENDIAN);
 		var type = data.getShort();
-		var messageNumber = data.getLong();
+		var messageNumber = data.getInt();
 		var timestamp = data.getLong();
-		var deviceId = data.getShort();
+		var deviceId = data.getInt();
 
 		switch (type) {
 			case TYPE_DATA:
@@ -51,7 +52,7 @@ public abstract class EspMessage {
 			this.acc = readVector3f(data);
 			this.gyro = readVector3f(data);
 			this.angle = readVector3f(data);
-			this.mag = readVector3f(data);
+			this.mag = readVector3i(data);
 		}
 	}
 
@@ -59,6 +60,13 @@ public abstract class EspMessage {
 		var x = data.getFloat();
 		var y = data.getFloat();
 		var z = data.getFloat();
+		return new Vector3f(x, y, z);
+	}
+
+	protected Vector3f readVector3i(ByteBuffer data) {
+		var x = data.getShort();
+		var y = data.getShort();
+		var z = data.getShort();
 		return new Vector3f(x, y, z);
 	}
 

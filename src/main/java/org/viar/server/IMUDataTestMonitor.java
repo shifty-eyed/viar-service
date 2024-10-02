@@ -34,31 +34,35 @@ public class IMUDataTestMonitor implements IMUSensorListener {
 
 		labUI.getButtonOK().addActionListener(e -> {
 			SwingUtilities.invokeLater(this::shutdown);
-
 		});
 	}
 
 	@Override
-	public void onSensorData(EspMessage.Data data) {
+	public void onSensorData(EspMessage.Data data, int messagesPerSecond) {
+		final var numFormat = "%.2f";
 		if (running) {
 			SwingUtilities.invokeLater(() -> {
-				labUI.getAccX().setText(String.format("%.3f",data.getAcc().x));
-				labUI.getAccY().setText(String.format("%.3f",data.getAcc().y));
-				labUI.getAccZ().setText(String.format("%.3f",data.getAcc().z));
+				labUI.getAccX().setText(String.format(numFormat,data.getAcc().x));
+				labUI.getAccY().setText(String.format(numFormat,data.getAcc().y));
+				labUI.getAccZ().setText(String.format(numFormat,data.getAcc().z));
 
-				labUI.getGyroX().setText(String.format("%.3f",data.getGyro().x));
-				labUI.getGyroY().setText(String.format("%.3f",data.getGyro().y));
-				labUI.getGyroZ().setText(String.format("%.3f",data.getGyro().z));
+				labUI.getGyroX().setText(String.format(numFormat,data.getGyro().x));
+				labUI.getGyroY().setText(String.format(numFormat,data.getGyro().y));
+				labUI.getGyroZ().setText(String.format(numFormat,data.getGyro().z));
 
-				labUI.getMagX().setText(String.format("%.3f",data.getMag().x));
-				labUI.getMagY().setText(String.format("%.3f",data.getMag().y));
-				labUI.getMagZ().setText(String.format("%.3f",data.getMag().z));
+				labUI.getMagX().setText(String.format(numFormat,data.getMag().x));
+				labUI.getMagY().setText(String.format(numFormat,data.getMag().y));
+				labUI.getMagZ().setText(String.format(numFormat,data.getMag().z));
 
-				labUI.getAngleX().setText(String.format("%.3f",data.getAngle().x));
-				labUI.getAngleY().setText(String.format("%.3f",data.getAngle().y));
-				labUI.getAngleZ().setText(String.format("%.3f",data.getAngle().z));
+				labUI.getAngleX().setText(String.format(numFormat,data.getAngle().x));
+				labUI.getAngleY().setText(String.format(numFormat,data.getAngle().y));
+				labUI.getAngleZ().setText(String.format(numFormat,data.getAngle().z));
 
 				labUI.getMesageNum().setText(String.valueOf(data.getMessageNumber()));
+				labUI.getMsgPerSecond().setText(String.valueOf(messagesPerSecond));
+
+				final String text = String.format("Dev: %d, TS: %d", data.getDeviceId(), data.getTimestamp());
+				labUI.getTestArea().setText(text);
 			});
 		}
 	}
