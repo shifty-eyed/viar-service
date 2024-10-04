@@ -34,14 +34,14 @@ public class IMUDataPanel extends JDialog {
 	private JTextField mesageNum;
 	private JTextField msgPerSecond;
 	private JTextArea testArea;
+	private JTextField inCmdTextField;
+	private JButton sendButton;
 
 
 	public IMUDataPanel() {
 		setContentPane(contentPane);
 		setModal(true);
 		getRootPane().setDefaultButton(buttonOK);
-
-
 	}
 
 	{
@@ -60,10 +60,10 @@ public class IMUDataPanel extends JDialog {
 	 */
 	private void $$$setupUI$$$() {
 		contentPane = new JPanel();
-		contentPane.setLayout(new GridLayoutManager(6, 1, new Insets(10, 10, 10, 10), -1, -1));
+		contentPane.setLayout(new GridLayoutManager(7, 1, new Insets(10, 10, 10, 10), -1, -1));
 		final JPanel panel1 = new JPanel();
 		panel1.setLayout(new GridLayoutManager(1, 6, new Insets(0, 0, 0, 0), -1, -1));
-		contentPane.add(panel1, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, 1, null, null, null, 0, false));
+		contentPane.add(panel1, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, 1, null, null, null, 0, false));
 		final Spacer spacer1 = new Spacer();
 		panel1.add(spacer1, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
 		final JPanel panel2 = new JPanel();
@@ -140,6 +140,15 @@ public class IMUDataPanel extends JDialog {
 		Font testAreaFont = this.$$$getFont$$$("Monospaced", -1, -1, testArea.getFont());
 		if (testAreaFont != null) testArea.setFont(testAreaFont);
 		panel3.add(testArea, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
+		final JPanel panel4 = new JPanel();
+		panel4.setLayout(new BorderLayout(0, 0));
+		contentPane.add(panel4, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+		inCmdTextField = new JTextField();
+		inCmdTextField.setText("");
+		panel4.add(inCmdTextField, BorderLayout.CENTER);
+		sendButton = new JButton();
+		sendButton.setText("Send");
+		panel4.add(sendButton, BorderLayout.EAST);
 	}
 
 	/**

@@ -35,6 +35,7 @@ public class IMUDataTestMonitor implements IMUSensorListener {
 		labUI.getButtonOK().addActionListener(e -> {
 			SwingUtilities.invokeLater(this::shutdown);
 		});
+
 	}
 
 	@Override
@@ -65,6 +66,14 @@ public class IMUDataTestMonitor implements IMUSensorListener {
 				labUI.getTestArea().setText(text);
 			});
 		}
+	}
+
+	public JButton getButtonSend() {
+		return labUI.getSendButton();
+	}
+
+	public String getCommandField() {
+		return labUI.getInCmdTextField().getText();
 	}
 
 	@PreDestroy

@@ -1,7 +1,5 @@
 package org.viar.server;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.viar.core.IMUSensorListener;
@@ -10,9 +8,13 @@ import org.viar.server.model.EspMessage;
 import javax.annotation.PostConstruct;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketTimeoutException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Executor;
 
 @Component
@@ -21,6 +23,7 @@ public class EspTrackerUdpServer {
 	private static final int PORT = 9876;
 
 	private final List<IMUSensorListener> listeners = new ArrayList<>();
+	private final Set<InetAddress> clients = new HashSet<>();
 
 	private final IMUDataTestMonitor monitor;
 	private final Executor daemonExecutor;
@@ -38,6 +41,7 @@ public class EspTrackerUdpServer {
 	@PostConstruct
 	public void init() {
 		listeners.add(monitor);
+		monitor.getButtonSend().addActionListener(e -> sendCommandToClients(monitor.getCommandField()));
 		daemonExecutor.execute(this::startUdpServer);
 		Runtime.getRuntime().addShutdownHook(new Thread(this::stopUdpServer));
 	}
@@ -70,14 +74,28 @@ public class EspTrackerUdpServer {
 		}
 	}
 
+	private void sendCommandToClients(String command) {
+		clients.forEach(client -> {
+			try (DatagramSocket clientSocket = new DatagramSocket()) {
+				byte[] sendData = command.getBytes(StandardCharsets.UTF_8);
+				DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, client, PORT);
+				clientSocket.send(sendPacket);
+				System.out.println("Command sent to client: " + command);
+			} catch (Exception e) {
+				System.out.println("Error sending command to client: " + e.getMessage());
+			}
+		});
+	}
+
 	public void stopUdpServer() {
 		running = false;
 		System.out.println("Stopping UDP Server...");
 	}
 
 	private void processPacket(DatagramPacket packet) {
+		messageCount++;
+		clients.add(packet.getAddress());
 		try {
-			messageCount++;
 			EspMessage message = EspMessage.fromBytes(packet.getData());
 			if (message.getType() == EspMessage.TYPE_DATA) {
 				updateListeners((EspMessage.Data) message);
